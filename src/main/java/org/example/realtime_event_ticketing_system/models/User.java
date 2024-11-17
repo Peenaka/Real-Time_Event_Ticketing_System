@@ -21,6 +21,8 @@ public abstract class User {
     private String name;
     private String role;
     private LocalDateTime createdAt;
+
+    @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
     @PrePersist

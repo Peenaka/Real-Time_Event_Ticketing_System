@@ -31,13 +31,14 @@ public class AuthService {
         }
 
         Customer customer = new Customer();
-        customer.setName(dto.getName());
+        customer.setName(dto.getName()); // Set the name here
         customer.setEmail(dto.getEmail());
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
         customer.setVIP(dto.isVIP());
 
         return customerRepository.save(customer);
     }
+
 
     public Vendor registerVendor(VendorRegistrationDto dto) {
         if (vendorRepository.existsByEmail(dto.getEmail())) {

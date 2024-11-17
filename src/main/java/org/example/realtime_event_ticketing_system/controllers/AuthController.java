@@ -18,12 +18,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
-
     @Autowired
     private AuthService authService;
-
     @PostMapping("/customer/register")
     public ResponseEntity<ApiResponse<?>> registerCustomer(@RequestBody CustomerRegistrationDto dto) {
         try {
