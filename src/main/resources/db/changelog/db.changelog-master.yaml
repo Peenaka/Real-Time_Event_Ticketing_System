@@ -1,0 +1,161 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: your_name
+      changes:
+        - createTable:
+            tableName: vendor
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: event
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: vendor_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ticket_pool_id
+                  type: BIGINT
+              - column:
+                  name: configuration_id
+                  type: BIGINT
+
+        - createTable:
+            tableName: ticket_pool
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: total_tickets
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available_tickets
+                  type: INT
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: configuration
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: ticket_price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: seating_arrangement
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: ticket_pool_customers
+            columns:
+              - column:
+                  name: ticket_pool_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        # Foreign keys for relationships
+
+        - addForeignKeyConstraint:
+            baseTableName: event
+            baseColumnNames: vendor_id
+            referencedTableName: vendor
+            referencedColumnNames: id
+            constraintName: fk_event_vendor
+
+        - addForeignKeyConstraint:
+            baseTableName: event
+            baseColumnNames: ticket_pool_id
+            referencedTableName: ticket_pool
+            referencedColumnNames: id
+            constraintName: fk_event_ticket_pool
+
+        - addForeignKeyConstraint:
+            baseTableName: event
+            baseColumnNames: configuration_id
+            referencedTableName: configuration
+            referencedColumnNames: id
+            constraintName: fk_event_configuration
+
+        - addForeignKeyConstraint:
+            baseTableName: ticket_pool_customers
+            baseColumnNames: ticket_pool_id
+            referencedTableName: ticket_pool
+            referencedColumnNames: id
+            constraintName: fk_ticket_pool_customers_pool
+
+        - addForeignKeyConstraint:
+            baseTableName: ticket_pool_customers
+            baseColumnNames: customer_id
+            referencedTableName: customer
+            referencedColumnNames: id
+            constraintName: fk_ticket_pool_customers_customer
