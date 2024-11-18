@@ -25,14 +25,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<?>> registerCustomer(@RequestBody CustomerRegistrationDto dto) {
         try {
             Customer customer = authService.registerCustomer(dto);
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", customer.getId());
-            response.put("name", customer.getName());
-            response.put("email", customer.getEmail());
-            response.put("isVIP", customer.isVIP());
-            return ResponseEntity.ok(ApiResponse.success("Customer registered successfully", response));
+            return ResponseEntity.ok(ApiResponse.success("Customer registered successfully", customer));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Validation error: " + e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(409).body(ApiResponse.error("Conflict: " + e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+            return ResponseEntity.internalServerError().body(ApiResponse.error("Unexpected error: " + e.getMessage()));
         }
     }
 

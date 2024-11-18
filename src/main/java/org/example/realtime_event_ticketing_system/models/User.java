@@ -5,8 +5,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
@@ -14,18 +14,20 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
     private String name;
+
     private String role;
     private LocalDateTime createdAt;
-
-    @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
-    @PrePersist
+
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         isActive = true;

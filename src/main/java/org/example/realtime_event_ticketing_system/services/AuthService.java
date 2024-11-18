@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class AuthService {
@@ -31,10 +33,12 @@ public class AuthService {
         }
 
         Customer customer = new Customer();
-        customer.setName(dto.getName()); // Set the name here
+        customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
         customer.setPassword(passwordEncoder.encode(dto.getPassword()));
         customer.setVIP(dto.isVIP());
+        customer.setActive(true);
+
 
         return customerRepository.save(customer);
     }
