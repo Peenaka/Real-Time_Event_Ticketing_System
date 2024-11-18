@@ -1,35 +1,35 @@
-package org.example.realtime_event_ticketing_system.models;
+    package org.example.realtime_event_ticketing_system.models;
 
-import jakarta.persistence.*;
-import lombok.Data;
+    import jakarta.persistence.*;
+    import lombok.Data;
 
-import java.time.LocalDateTime;
+    import java.time.LocalDateTime;
 
-@Data
-@Entity
-@Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Data
+    @Entity
+    @Table(name = "users")
+    @Inheritance(strategy = InheritanceType.JOINED)
+    public abstract class User {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+        @Column(unique = true, nullable = false)
+        private String email;
 
-    @Column(nullable = false)
-    private String password;
+        @Column(nullable = false)
+        private String password;
 
-    @Column(nullable = false)
-    private String name;
+        @Column(nullable = false)
+        private String name;
 
-    private String role;
-    private LocalDateTime createdAt;
-    private boolean isActive;
+        private String role;
+        private LocalDateTime createdAt;
+        private boolean isActive;
 
 
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        isActive = true;
+        protected void onCreate() {
+            createdAt = LocalDateTime.now();
+            isActive = true;
+        }
     }
-}
