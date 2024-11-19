@@ -8,6 +8,7 @@
     import org.example.realtime_event_ticketing_system.models.Customer;
     import org.example.realtime_event_ticketing_system.models.Vendor;
     import org.example.realtime_event_ticketing_system.services.AuthService;
+    import org.example.realtime_event_ticketing_system.services.impl.AuthServiceImpl;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
