@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 public class TicketDto {
     private String eventName;
-    private BigDecimal price;
+    private float price;
     private LocalDateTime eventDateTime;
     private String venue;
     private boolean isVIP;
