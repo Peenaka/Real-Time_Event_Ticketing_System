@@ -1,0 +1,134 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04-ticket-tables
+      author: system
+      changes:
+        - createTable:
+            tableName: event_ticket_config
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_config_event
+                    references: event(id)
+              - column:
+                  name: total_tickets
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ticket_release_rate
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_retrieval_rate
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_ticket_capacity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available_tickets
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sold_tickets
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_configured
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: version
+                  type: bigint
+                  defaultValue: 0
+
+        - createTable:
+            tableName: ticket
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ticket_event
+                    references: event(id)
+              - column:
+                  name: price
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_vip
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: is_available
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+        - createTable:
+            tableName: purchase
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_purchase_customer
+                    references: customer(user_id)
+              - column:
+                  name: ticket_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_purchase_ticket
+                    references: ticket(id)
+              - column:
+                  name: purchase_time
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: transaction_id
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true

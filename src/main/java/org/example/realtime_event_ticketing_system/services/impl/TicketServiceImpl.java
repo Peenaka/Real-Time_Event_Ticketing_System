@@ -33,7 +33,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     @Transactional
-    public Ticket createTicket(TicketDto ticketDto, Long vendorId) {
+    public Ticket createTicket(TicketDto ticketDto, Long vendorId, Long eventId) {
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new RuntimeException("Vendor not found"));
 
@@ -54,7 +54,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Transactional
     @Override
-    public Ticket purchaseTicket(Long customerId) throws InterruptedException {
+    public Ticket purchaseTicket(Long customerId, Long id) throws InterruptedException {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
@@ -75,7 +75,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public int getAvailableTickets() {
+    public int getAvailableTickets(Long eventId) {
         return ticketPoolService.getAvailableTickets();
     }
 

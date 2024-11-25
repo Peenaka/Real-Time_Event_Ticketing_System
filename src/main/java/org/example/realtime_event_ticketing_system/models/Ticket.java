@@ -2,7 +2,9 @@
 
     import jakarta.persistence.*;
     import lombok.Data;
+    import lombok.Getter;
     import lombok.NoArgsConstructor;
+    import lombok.Setter;
 
     import java.math.BigDecimal;
     import java.time.LocalDateTime;
@@ -15,6 +17,8 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
+        @Getter
+        @Setter
         private String eventName;
         private BigDecimal price;
         private LocalDateTime eventDateTime;
