@@ -108,26 +108,4 @@ public class TicketController {
             return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
     }
-
-//    @PostMapping("/vendor/{vendorId}")
-//    public ResponseEntity<ApiResponse<?>> createTicket(
-//            @RequestBody TicketDto ticketDto,
-//            @PathVariable Long vendorId) {
-//        try {
-//            Ticket ticket = ticketService.createTicket(ticketDto, vendorId);
-//            return ResponseEntity.ok(ApiResponse.success("Ticket created successfully", ticket));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
-//        }
-//    }
-//
-//    @GetMapping("/available")
-//    public ResponseEntity<ApiResponse<?>> getAvailableTickets() {
-//        try {
-//            int availableTickets = ticketService.getAvailableTickets();
-//            return ResponseEntity.ok(ApiResponse.success("Available tickets retrieved successfully", availableTickets));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
-//        }
-//    }
 }

@@ -20,7 +20,6 @@
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Purchase> purchases = new ArrayList<>();
 
-    @PrePersist
     @Override
     protected void onCreate() {
       super.onCreate();

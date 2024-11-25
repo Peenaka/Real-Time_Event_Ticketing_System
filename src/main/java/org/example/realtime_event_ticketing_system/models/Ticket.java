@@ -23,6 +23,7 @@
         private boolean isAvailable;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private boolean purchased;
 
         @ManyToOne
         @JoinColumn(name = "vendor_id")

@@ -19,7 +19,6 @@
         @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
         private List<Ticket> tickets = new ArrayList<>();
 
-        @PrePersist
         @Override
         protected void onCreate() {
             super.onCreate();
