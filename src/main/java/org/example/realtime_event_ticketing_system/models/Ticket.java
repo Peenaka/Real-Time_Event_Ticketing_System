@@ -1,47 +1,48 @@
-    package org.example.realtime_event_ticketing_system.models;
+package org.example.realtime_event_ticketing_system.models;
 
-    import jakarta.persistence.*;
-    import lombok.Data;
-    import lombok.Getter;
-    import lombok.NoArgsConstructor;
-    import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    import java.math.BigDecimal;
-    import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-    @Entity
-    @Data
-    @NoArgsConstructor
-    public class Ticket {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+@Entity
+@Data
+@NoArgsConstructor
+public class Ticket {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Getter
-        @Setter
-        private String eventName;
-        private BigDecimal price;
-        private LocalDateTime eventDateTime;
-        private String venue;
-        private boolean isVIP;
-        private boolean isAvailable;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-        private boolean purchased;
+    private String eventName;
+    private BigDecimal price;
+    private LocalDateTime eventDateTime;
+    private String venue;
+    private boolean isVIP;
+    private boolean isAvailable;
+    private boolean isPurchased;
 
-        @ManyToOne
-        @JoinColumn(name = "vendor_id")
-        private Vendor vendor;
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
 
-        @PrePersist
-        protected void onCreate() {
-            createdAt = LocalDateTime.now();
-            updatedAt = LocalDateTime.now();
-            isAvailable = true;
-        }
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
-        @PreUpdate
-        protected void onUpdate() {
-            updatedAt = LocalDateTime.now();
-        }
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        isAvailable = true;
     }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+}

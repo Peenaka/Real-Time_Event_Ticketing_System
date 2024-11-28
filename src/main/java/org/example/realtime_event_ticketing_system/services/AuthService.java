@@ -14,4 +14,6 @@ public interface AuthService {
     Customer loginCustomer(LoginDto dto);
 
     Vendor loginVendor(LoginDto dto);
+    boolean isConfigVendor(String email, String password);
+
 }

@@ -3,12 +3,14 @@
     import org.example.realtime_event_ticketing_system.dto.CustomerRegistrationDto;
     import org.example.realtime_event_ticketing_system.dto.LoginDto;
     import org.example.realtime_event_ticketing_system.dto.VendorRegistrationDto;
+    import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
     import org.example.realtime_event_ticketing_system.models.Customer;
     import org.example.realtime_event_ticketing_system.models.Vendor;
     import org.example.realtime_event_ticketing_system.repositories.CustomerRepository;
     import org.example.realtime_event_ticketing_system.repositories.VendorRepository;
     import org.example.realtime_event_ticketing_system.services.AuthService;
     import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.stereotype.Service;
 
@@ -25,6 +27,17 @@
 
         @Autowired
         private PasswordEncoder passwordEncoder;
+
+        @Value("${config.vendor.email}")
+        private String configVendorEmail;
+
+        @Value("${config.vendor.password}")
+        private String configVendorPassword;
+
+        public AuthServiceImpl(CustomerRepository customerRepository, VendorRepository vendorRepository) {
+            this.customerRepository = customerRepository;
+            this.vendorRepository = vendorRepository;
+        }
 
         @Override
         public Customer registerCustomer(CustomerRegistrationDto dto) {
@@ -74,6 +87,9 @@
 
         @Override
         public Vendor loginVendor(LoginDto dto) {
+            if (isConfigVendor(dto.getEmail(), dto.getPassword())) {
+                throw new AuthenticationException("Config vendor cannot log in through regular vendor login");
+            }
             Vendor vendor = vendorRepository.findByEmail(dto.getEmail())
                     .orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
@@ -82,5 +98,9 @@
             }
 
             return vendor;
+        }
+        @Override
+        public boolean isConfigVendor(String email, String password) {
+            return email.equals(configVendorEmail) && password.equals(configVendorPassword);
         }
     }
