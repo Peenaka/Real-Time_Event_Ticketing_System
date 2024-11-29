@@ -6,9 +6,6 @@ import lombok.Data;
 
 @Data
 public class TicketConfigDto {
-    @NotNull(message = "Event ID is required")
-    private Long eventId;
-
     @NotNull(message = "Total tickets is required")
     @Min(value = 1, message = "Total tickets must be at least 1")
     private Integer totalTickets;

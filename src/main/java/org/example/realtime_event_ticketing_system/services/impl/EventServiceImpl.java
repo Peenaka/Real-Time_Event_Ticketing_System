@@ -1,10 +1,9 @@
 package org.example.realtime_event_ticketing_system.services.impl;
-
 import lombok.RequiredArgsConstructor;
 import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
+import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Event;
-import org.example.realtime_event_ticketing_system.models.EventStatus;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.services.EventService;
 import org.springframework.stereotype.Service;
@@ -21,10 +20,16 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event createEvent(EventDto eventDto) {
-        Event event = new Event();
-        event.setEventName(eventDto.getEventName());
-        event.setEventCode(generateEventCode());
-        event.setStatus(EventStatus.CREATED);
+        if (eventDto.getEventCode() != null && eventRepository.existsByEventCode(eventDto.getEventCode())) {
+            throw new TicketingException("Event code already exists");
+        }
+
+        Event event = Event.builder()
+                .eventName(eventDto.getEventName())
+                .eventCode(eventDto.getEventCode() != null ? eventDto.getEventCode() : generateEventCode())
+                .status(eventDto.getStatus())
+                .build();
+
         return eventRepository.save(event);
     }
 
@@ -32,7 +37,18 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public Event updateEvent(Long eventId, EventDto eventDto) {
         Event event = getEventById(eventId);
+
+        if (eventDto.getEventCode() != null && !event.getEventCode().equals(eventDto.getEventCode())
+                && eventRepository.existsByEventCode(eventDto.getEventCode())) {
+            throw new TicketingException("Event code already exists");
+        }
+
         event.setEventName(eventDto.getEventName());
+        if (eventDto.getEventCode() != null) {
+            event.setEventCode(eventDto.getEventCode());
+        }
+        event.setStatus(eventDto.getStatus());
+
         return eventRepository.save(event);
     }
 
@@ -40,8 +56,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void deleteEvent(Long eventId) {
         Event event = getEventById(eventId);
-        event.setStatus(EventStatus.CANCELLED);
-        eventRepository.save(event);
+        eventRepository.delete(event);
     }
 
     @Override
@@ -53,6 +68,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
+    }
+
+    @Override
+    public boolean existsByEventCode(String eventCode) {
+        return eventRepository.existsByEventCode(eventCode);
     }
 
     private String generateEventCode() {

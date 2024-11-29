@@ -9,9 +9,7 @@ import org.example.realtime_event_ticketing_system.dto.ApiResponse;
 import org.example.realtime_event_ticketing_system.dto.ConfigVendorLoginDto;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
-import org.example.realtime_event_ticketing_system.services.AuthService;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
-import org.example.realtime_event_ticketing_system.services.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ConfigController {
     private final ConfigService configService;
-    private final AuthService authService;
-    private final JwtService jwtService;
+    private static final String CONFIG_VENDOR_EMAIL = "VendorUser@gmail.com";
+    private static final String CONFIG_VENDOR_PASSWORD = "vendor@user123";
 
-    @Operation(summary = "Config vendor login")
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<?>> configVendorLogin(@Valid @RequestBody ConfigVendorLoginDto loginDto) {
-        if (!authService.isConfigVendor(loginDto.getEmail(), loginDto.getPassword())) {
+    private void validateConfigVendor(String email, String password) {
+        if (!CONFIG_VENDOR_EMAIL.equals(email) || !CONFIG_VENDOR_PASSWORD.equals(password)) {
             throw new AuthenticationException("Invalid config vendor credentials");
         }
-
-        String token = jwtService.generateConfigVendorToken(loginDto.getEmail());
-        return ResponseEntity.ok(ApiResponse.success("Login successful", token));
     }
 
     @Operation(summary = "Configure tickets for an event")
@@ -45,9 +38,10 @@ public class ConfigController {
     public ResponseEntity<ApiResponse<?>> configureEvent(
             @PathVariable Long eventId,
             @Valid @RequestBody TicketConfigDto configDto,
-            @RequestHeader("Authorization") String token) {
+            @RequestParam String email,
+            @RequestParam String password) {
 
-        validateConfigVendorToken(token);
+        validateConfigVendor(email, password);
         TicketConfig config = configService.configureEvent(eventId, configDto);
         return ResponseEntity.ok(ApiResponse.success("Event configured successfully", config));
     }
@@ -56,9 +50,10 @@ public class ConfigController {
     @DeleteMapping("/event/{eventId}")
     public ResponseEntity<ApiResponse<?>> resetEventConfig(
             @PathVariable Long eventId,
-            @RequestHeader("Authorization") String token) {
+            @RequestParam String email,
+            @RequestParam String password) {
 
-        validateConfigVendorToken(token);
+        validateConfigVendor(email, password);
         configService.resetEventConfig(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event configuration reset successfully", null));
     }
@@ -67,20 +62,11 @@ public class ConfigController {
     @GetMapping("/event/{eventId}")
     public ResponseEntity<ApiResponse<?>> getEventConfig(
             @PathVariable Long eventId,
-            @RequestHeader("Authorization") String token) {
+            @RequestParam String email,
+            @RequestParam String password) {
 
-        validateConfigVendorToken(token);
+        validateConfigVendor(email, password);
         TicketConfig config = configService.getEventConfig(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event configuration retrieved successfully", config));
-    }
-
-    private void validateConfigVendorToken(String token) {
-        if (!token.startsWith("Bearer ")) {
-            throw new AuthenticationException("Invalid token format");
-        }
-        String jwt = token.substring(7);
-        if (!jwtService.validateConfigVendorToken(jwt)) {
-            throw new AuthenticationException("Invalid or expired token");
-        }
     }
 }

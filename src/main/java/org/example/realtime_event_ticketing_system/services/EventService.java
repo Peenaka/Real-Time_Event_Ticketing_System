@@ -2,7 +2,6 @@ package org.example.realtime_event_ticketing_system.services;
 
 import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.models.Event;
-
 import java.util.List;
 
 public interface EventService {
@@ -11,4 +10,5 @@ public interface EventService {
     void deleteEvent(Long eventId);
     Event getEventById(Long eventId);
     List<Event> getAllEvents();
+    boolean existsByEventCode(String eventCode);
 }
