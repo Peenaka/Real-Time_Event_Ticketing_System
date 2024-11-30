@@ -10,6 +10,7 @@ import org.example.realtime_event_ticketing_system.dto.ConfigVendorLoginDto;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
+import org.example.realtime_event_ticketing_system.utils.AuthenticationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ConfigController {
     private final ConfigService configService;
-    private static final String CONFIG_VENDOR_EMAIL = "VendorUser@gmail.com";
-    private static final String CONFIG_VENDOR_PASSWORD = "vendor@user123";
-
-    private void validateConfigVendor(String email, String password) {
-        if (!CONFIG_VENDOR_EMAIL.equals(email) || !CONFIG_VENDOR_PASSWORD.equals(password)) {
-            throw new AuthenticationException("Invalid config vendor credentials");
-        }
-    }
+    private final AuthenticationUtils authenticationUtils;
 
     @Operation(summary = "Configure tickets for an event")
     @ApiResponses(value = {
@@ -41,7 +35,7 @@ public class ConfigController {
             @RequestParam String email,
             @RequestParam String password) {
 
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         TicketConfig config = configService.configureEvent(eventId, configDto);
         return ResponseEntity.ok(ApiResponse.success("Event configured successfully", config));
     }
@@ -53,7 +47,7 @@ public class ConfigController {
             @RequestParam String email,
             @RequestParam String password) {
 
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         configService.resetEventConfig(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event configuration reset successfully", null));
     }
@@ -65,7 +59,7 @@ public class ConfigController {
             @RequestParam String email,
             @RequestParam String password) {
 
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         TicketConfig config = configService.getEventConfig(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event configuration retrieved successfully", config));
     }

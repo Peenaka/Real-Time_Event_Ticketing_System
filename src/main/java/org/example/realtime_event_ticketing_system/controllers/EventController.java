@@ -9,24 +9,18 @@ import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.services.EventService;
+import org.example.realtime_event_ticketing_system.utils.AuthenticationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private static final String CONFIG_VENDOR_EMAIL = "VendorUser@gmail.com";
-    private static final String CONFIG_VENDOR_PASSWORD = "vendor@user123";
-
-    private void validateConfigVendor(String email, String password) {
-        if (!CONFIG_VENDOR_EMAIL.equals(email) || !CONFIG_VENDOR_PASSWORD.equals(password)) {
-            throw new AuthenticationException("Unauthorized: Only config vendor can perform this action");
-        }
-    }
+    private final AuthenticationUtils authenticationUtils;
 
     @Operation(summary = "Create a new event")
     @ApiResponses(value = {
@@ -39,8 +33,7 @@ public class EventController {
             @Valid @RequestBody EventDto eventDto,
             @RequestParam String email,
             @RequestParam String password) {
-
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         Event event = eventService.createEvent(eventDto);
         return ResponseEntity.ok(ApiResponse.success("Event created successfully", event));
     }
@@ -58,8 +51,7 @@ public class EventController {
             @Valid @RequestBody EventDto eventDto,
             @RequestParam String email,
             @RequestParam String password) {
-
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         Event event = eventService.updateEvent(eventId, eventDto);
         return ResponseEntity.ok(ApiResponse.success("Event updated successfully", event));
     }
@@ -75,8 +67,7 @@ public class EventController {
             @PathVariable Long eventId,
             @RequestParam String email,
             @RequestParam String password) {
-
-        validateConfigVendor(email, password);
+        authenticationUtils.validateConfigVendor(email, password);
         eventService.deleteEvent(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event deleted successfully", null));
     }

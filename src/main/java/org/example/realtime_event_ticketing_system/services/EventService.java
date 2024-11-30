@@ -1,7 +1,10 @@
 package org.example.realtime_event_ticketing_system.services;
 
 import org.example.realtime_event_ticketing_system.dto.EventDto;
+import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.models.Event;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 public interface EventService {
@@ -10,5 +13,7 @@ public interface EventService {
     void deleteEvent(Long eventId);
     Event getEventById(Long eventId);
     List<Event> getAllEvents();
-    boolean existsByEventCode(String eventCode);
+    void configureEvent(Long eventId, TicketConfigDto config);
+    void resetEvent(Long eventId);
+    TicketConfigDto getEventConfiguration(Long eventId);
 }

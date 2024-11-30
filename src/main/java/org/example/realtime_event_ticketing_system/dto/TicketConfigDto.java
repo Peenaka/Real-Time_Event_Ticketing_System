@@ -2,9 +2,15 @@ package org.example.realtime_event_ticketing_system.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TicketConfigDto {
     @NotNull(message = "Total tickets is required")
     @Min(value = 1, message = "Total tickets must be at least 1")
@@ -21,4 +27,8 @@ public class TicketConfigDto {
     @NotNull(message = "Max ticket capacity is required")
     @Min(value = 1, message = "Max ticket capacity must be at least 1")
     private Integer maxTicketCapacity;
+
+    private Integer availableTickets;
+    private Integer soldTickets;
+
 }

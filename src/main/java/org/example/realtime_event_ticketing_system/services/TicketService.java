@@ -12,4 +12,6 @@ public interface TicketService {
     int getAvailableTickets(Long eventId);
 
     Ticket getTicketDetails(Long ticketId);
+    void deleteTicketByCustomer(Long customerId, Long ticketId);
+    void deleteTicketByVendor(Long vendorId, Long ticketId);
 }

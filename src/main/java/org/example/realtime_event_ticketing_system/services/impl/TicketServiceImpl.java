@@ -2,6 +2,8 @@ package org.example.realtime_event_ticketing_system.services.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.realtime_event_ticketing_system.dto.TicketDto;
+import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
+import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Customer;
 import org.example.realtime_event_ticketing_system.models.Purchase;
 import org.example.realtime_event_ticketing_system.models.Ticket;
@@ -10,6 +12,7 @@ import org.example.realtime_event_ticketing_system.repositories.CustomerReposito
 import org.example.realtime_event_ticketing_system.repositories.PurchaseRepository;
 import org.example.realtime_event_ticketing_system.repositories.TicketRepository;
 import org.example.realtime_event_ticketing_system.repositories.VendorRepository;
+import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.example.realtime_event_ticketing_system.services.TicketService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import java.math.BigDecimal;
 public class TicketServiceImpl implements TicketService {
     @Autowired
     private TicketRepository ticketRepository;
+
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -28,7 +32,7 @@ public class TicketServiceImpl implements TicketService {
     private VendorRepository vendorRepository;
 
     @Autowired
-    private TicketPoolServiceImpl ticketPoolService;
+    private TicketPoolService ticketPoolService;
 
     @Autowired
     private PurchaseRepository purchaseRepository;
@@ -49,18 +53,23 @@ public class TicketServiceImpl implements TicketService {
         ticket.setAvailable(true);
 
         ticket = ticketRepository.save(ticket);
-        ticketPoolService.addTickets(ticket);
+
+        try {
+            ticketPoolService.addTickets(eventId, ticket);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Failed to add ticket to pool", e);
+        }
 
         return ticket;
     }
 
     @Transactional
     @Override
-    public Ticket purchaseTicket(Long customerId, Long id) throws InterruptedException {
+    public Ticket purchaseTicket(Long customerId, Long eventId) throws InterruptedException {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        Ticket ticket = ticketPoolService.purchaseTicket(customer.isVIP());
+        Ticket ticket = ticketPoolService.purchaseTicket(eventId, customer.isVIP());
         if (ticket == null) {
             throw new RuntimeException("No tickets available");
         }
@@ -78,12 +87,49 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public int getAvailableTickets(Long eventId) {
-        return ticketPoolService.getAvailableTickets();
+        return ticketPoolService.getEventStats(eventId).getAvailableTickets();
     }
 
     @Override
     public Ticket getTicketDetails(Long ticketId) {
         return ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+    }
+    @Override
+    @Transactional
+    public void deleteTicketByCustomer(Long customerId, Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        Purchase purchase = purchaseRepository.findByTicketId(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found for ticket"));
+
+        if (!purchase.getCustomer().getId().equals(customerId)) {
+            throw new TicketingException("Customer is not authorized to delete this ticket");
+        }
+
+        if (!ticket.isPurchased()) {
+            throw new TicketingException("Cannot delete unpurchased ticket");
+        }
+
+        purchaseRepository.delete(purchase);
+        ticketRepository.delete(ticket);
+    }
+
+    @Override
+    @Transactional
+    public void deleteTicketByVendor(Long vendorId, Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        if (!ticket.getVendor().getId().equals(vendorId)) {
+            throw new TicketingException("Vendor is not authorized to delete this ticket");
+        }
+
+        if (ticket.isPurchased()) {
+            throw new TicketingException("Cannot delete purchased ticket");
+        }
+
+        ticketRepository.delete(ticket);
     }
 }

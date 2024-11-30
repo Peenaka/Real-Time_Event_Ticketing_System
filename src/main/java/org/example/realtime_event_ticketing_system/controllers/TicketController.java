@@ -113,4 +113,31 @@ public class TicketController {
             throw new TicketingException(e.getMessage());
         }
     }
+    @Operation(summary = "Delete purchased ticket by customer")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Ticket deleted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Delete failed"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Ticket not found")
+    })
+    @DeleteMapping("/customer/{customerId}/ticket/{ticketId}")
+    public ResponseEntity<ApiResponse<?>> deleteTicketByCustomer(
+            @PathVariable Long customerId,
+            @PathVariable Long ticketId) {
+        ticketService.deleteTicketByCustomer(customerId, ticketId);
+        return ResponseEntity.ok(ApiResponse.success("Ticket deleted successfully", null));
+    }
+
+    @Operation(summary = "Delete ticket by vendor")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Ticket deleted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Delete failed"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Ticket not found")
+    })
+    @DeleteMapping("/vendor/{vendorId}/ticket/{ticketId}")
+    public ResponseEntity<ApiResponse<?>> deleteTicketByVendor(
+            @PathVariable Long vendorId,
+            @PathVariable Long ticketId) {
+        ticketService.deleteTicketByVendor(vendorId, ticketId);
+        return ResponseEntity.ok(ApiResponse.success("Ticket deleted successfully", null));
+    }
 }
