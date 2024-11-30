@@ -14,6 +14,8 @@ import org.example.realtime_event_ticketing_system.services.TicketService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -39,7 +41,7 @@ public class TicketServiceImpl implements TicketService {
 
         Ticket ticket = new Ticket();
         ticket.setEventName(ticketDto.getEventName());
-//        ticket.setPrice(ticketDto.getPrice());
+        ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
         ticket.setEventDateTime(ticketDto.getEventDateTime());
         ticket.setVenue(ticketDto.getVenue());
         ticket.setVIP(ticketDto.isVIP());
