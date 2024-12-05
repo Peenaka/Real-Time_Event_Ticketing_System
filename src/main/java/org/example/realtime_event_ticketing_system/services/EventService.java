@@ -12,7 +12,7 @@ public interface EventService {
     Event updateEvent(Long eventId, EventDto eventDto);
     void deleteEvent(Long eventId);
     Event getEventById(Long eventId);
-    List<Event> getAllEvents();
+    List<EventDto> getAllEvents();
     void configureEvent(Long eventId, TicketConfigDto config);
     void resetEvent(Long eventId);
     TicketConfigDto getEventConfiguration(Long eventId);

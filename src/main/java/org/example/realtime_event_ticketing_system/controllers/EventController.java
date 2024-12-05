@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.realtime_event_ticketing_system.dto.ApiResponse;
 import org.example.realtime_event_ticketing_system.dto.EventDto;
-import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.services.EventService;
 import org.example.realtime_event_ticketing_system.utils.AuthenticationUtils;
@@ -75,7 +74,7 @@ public class EventController {
     @Operation(summary = "Get all events")
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getAllEvents() {
-        List<Event> events = eventService.getAllEvents();
+        List<EventDto> events = eventService.getAllEvents();
         return ResponseEntity.ok(ApiResponse.success("Events retrieved successfully", events));
     }
 

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.realtime_event_ticketing_system.config.TicketConfig;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,5 +52,12 @@ public class Event {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Event(EventStatus status, String eventName, String eventCode, Long id) {
+        this.status = status;
+        this.eventName = eventName;
+        this.eventCode = eventCode;
+        this.id = id;
     }
 }

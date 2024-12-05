@@ -11,6 +11,7 @@ import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,8 +75,19 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public List<EventDto> getAllEvents() {
+        List<EventDto> eventDtos = new ArrayList<>();
+        List<Event> eventDto = new ArrayList<>();
+        try {
+             eventDto = eventRepository.findAll();
+        } catch (Exception e ){
+            e.printStackTrace();
+        }
+        for(Event event : eventDto){
+            eventDtos.add(new EventDto(event.getId(),event.getEventName(),event.getEventCode(),event.getStatus()));
+        }
+//        return eventRepository.findAll();
+        return eventDtos;
     }
     @Override
     @Transactional

@@ -1,5 +1,6 @@
 package org.example.realtime_event_ticketing_system.repositories;
 
+import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.models.EventStatus;
 import org.example.realtime_event_ticketing_system.models.Vendor;
@@ -52,4 +53,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     // Find events by vendor with pagination
     @Query("SELECT e FROM Event e WHERE e.vendor = :vendor ORDER BY e.createdAt DESC")
     List<Event> findByVendorWithPagination(@Param("vendor") Vendor vendor, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT e.id AS id, e.eventCode AS eventCode, e.eventName AS eventName, e.status AS status FROM Event e")
+    List<Event> findEventBasicDetails();
 }

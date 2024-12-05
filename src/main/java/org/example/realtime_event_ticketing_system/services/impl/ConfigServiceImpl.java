@@ -1,7 +1,7 @@
 package org.example.realtime_event_ticketing_system.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.realtime_event_ticketing_system.config.TicketConfig;
+import org.example.realtime_event_ticketing_system.models.TicketConfig;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;

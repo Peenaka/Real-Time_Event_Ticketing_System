@@ -1,6 +1,6 @@
 package org.example.realtime_event_ticketing_system.repositories;
 
-import org.example.realtime_event_ticketing_system.config.TicketConfig;
+import org.example.realtime_event_ticketing_system.models.TicketConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;

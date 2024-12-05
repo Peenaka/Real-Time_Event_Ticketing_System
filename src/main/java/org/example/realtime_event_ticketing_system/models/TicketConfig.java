@@ -1,11 +1,10 @@
-package org.example.realtime_event_ticketing_system.config;
+package org.example.realtime_event_ticketing_system.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.realtime_event_ticketing_system.models.Event;
 
 @Data
 @Builder
