@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.example.realtime_event_ticketing_system.models.EventStatus;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Data
 @AllArgsConstructor
 public class EventDto {
@@ -22,4 +26,6 @@ public class EventDto {
     @Schema(description = "Event status")
     //@NotNull(message = "Event status is required")
     private EventStatus status;
+    private String venue;
+    private LocalDateTime eventDateTime;
 }

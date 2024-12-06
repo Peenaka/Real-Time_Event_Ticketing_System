@@ -17,8 +17,6 @@ public class Ticket {
 
     private String eventName;
     private BigDecimal price;
-    private LocalDateTime eventDateTime;
-    private String venue;
     private boolean isVIP;
     private boolean isAvailable;
     private boolean isPurchased;

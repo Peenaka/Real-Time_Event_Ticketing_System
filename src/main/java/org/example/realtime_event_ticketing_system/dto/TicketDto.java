@@ -9,7 +9,5 @@ import java.time.LocalDateTime;
 public class TicketDto {
     private String eventName;
     private float price;
-    private LocalDateTime eventDateTime;
-    private String venue;
     private boolean isVIP;
 }

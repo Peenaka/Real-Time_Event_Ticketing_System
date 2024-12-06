@@ -29,6 +29,10 @@ public class Event {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EventStatus status;
+//    @Column(nullable = false)
+    private String venue;
+
+    private LocalDateTime eventDateTime;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id")
