@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.example.realtime_event_ticketing_system.models.Ticket;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    long countByIsPurchased(boolean isPurchased); // Changed to match the entity property name
+    void deleteByEventId(Long eventId);
+    List<Ticket> findByEventId(Long eventId);
 }

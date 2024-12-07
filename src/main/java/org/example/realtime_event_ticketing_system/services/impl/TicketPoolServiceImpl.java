@@ -1,6 +1,8 @@
 package org.example.realtime_event_ticketing_system.services.impl;
 
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
+import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
+import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Ticket;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.springframework.stereotype.Service;
@@ -62,7 +64,9 @@ public class TicketPoolServiceImpl implements TicketPoolService {
     @Override
     public boolean addTickets(Long eventId, Ticket ticket) throws InterruptedException {
         ReentrantLock lock = eventLocks.get(eventId);
-        if (lock == null) return false;
+        if (lock == null) {
+            throw new ResourceNotFoundException("Event configuration not found");
+        }
 
         try {
             lock.lock();
@@ -71,9 +75,16 @@ public class TicketPoolServiceImpl implements TicketPoolService {
             Integer maxCapacity = eventMaxCapacities.get(eventId);
             Integer total = eventTotalTickets.get(eventId);
 
-            if (available.get() >= maxCapacity ||
-                    sold.get() + available.get() >= total) {
-                return false;
+            if (available == null || sold == null || maxCapacity == null || total == null) {
+                throw new TicketingException("Event not properly configured");
+            }
+
+            if (available.get() + sold.get() >= total) {
+                throw new TicketingException("Total ticket limit reached");
+            }
+
+            if (available.get() >= maxCapacity) {
+                throw new TicketingException("Maximum capacity reached");
             }
 
             ticketPool.offer(ticket);
@@ -81,6 +92,61 @@ public class TicketPoolServiceImpl implements TicketPoolService {
             return true;
         } finally {
             lock.unlock();
+        }
+    }
+
+    @Override
+    public TicketConfigDto getEventStats(Long eventId) {
+        ReentrantLock lock = eventLocks.get(eventId);
+        if (lock == null) {
+            throw new ResourceNotFoundException("Event configuration not found");
+        }
+
+        try {
+            lock.lock();
+            AtomicInteger available = eventAvailableTickets.get(eventId);
+            AtomicInteger sold = eventSoldTickets.get(eventId);
+            Integer total = eventTotalTickets.get(eventId);
+            Integer maxCapacity = eventMaxCapacities.get(eventId);
+            Integer releaseRate = eventTicketReleaseRates.get(eventId);
+            Integer retrievalRate = eventCustomerRetrievalRates.get(eventId);
+
+            if (available == null || sold == null || total == null || maxCapacity == null ||
+                    releaseRate == null || retrievalRate == null) {
+                throw new TicketingException("Event not properly configured");
+            }
+
+            return TicketConfigDto.builder()
+                    .totalTickets(total)
+                    .maxTicketCapacity(maxCapacity)
+                    .ticketReleaseRate(releaseRate)
+                    .customerRetrievalRate(retrievalRate)
+                    .availableTickets(available.get())
+                    .soldTickets(sold.get())
+                    .build();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void resetEvent(Long eventId) {
+        ReentrantLock lock = eventLocks.get(eventId);
+        if (lock != null) {
+            try {
+                lock.lock();
+                eventSemaphores.remove(eventId);
+                eventAvailableTickets.remove(eventId);
+                eventSoldTickets.remove(eventId);
+                eventTotalTickets.remove(eventId);
+                eventMaxCapacities.remove(eventId);
+                eventTicketReleaseRates.remove(eventId);
+                eventCustomerRetrievalRates.remove(eventId);
+                ticketPool.removeIf(ticket -> ticket.getEvent().getId().equals(eventId));
+            } finally {
+                lock.unlock();
+                eventLocks.remove(eventId);
+            }
         }
     }
 
@@ -128,41 +194,5 @@ public class TicketPoolServiceImpl implements TicketPoolService {
             semaphore.release();
         }
     }
-
-    @Override
-    public TicketConfigDto getEventStats(Long eventId) {
-        AtomicInteger available = eventAvailableTickets.get(eventId);
-        AtomicInteger sold = eventSoldTickets.get(eventId);
-
-        return TicketConfigDto.builder()
-                .totalTickets(eventTotalTickets.get(eventId))
-                .maxTicketCapacity(eventMaxCapacities.get(eventId))
-                .ticketReleaseRate(eventTicketReleaseRates.get(eventId))
-                .customerRetrievalRate(eventCustomerRetrievalRates.get(eventId))
-                .availableTickets(available != null ? available.get() : 0)
-                .soldTickets(sold != null ? sold.get() : 0)
-                .build();
-    }
-
-    @Override
-    public void resetEvent(Long eventId) {
-        ReentrantLock lock = eventLocks.get(eventId);
-        if (lock != null) {
-            try {
-                lock.lock();
-                eventSemaphores.remove(eventId);
-                eventAvailableTickets.remove(eventId);
-                eventSoldTickets.remove(eventId);
-                eventTotalTickets.remove(eventId);
-                eventMaxCapacities.remove(eventId);
-                eventTicketReleaseRates.remove(eventId);
-                eventCustomerRetrievalRates.remove(eventId);
-
-                ticketPool.removeIf(ticket -> ticket.getEvent().getId().equals(eventId));
-            } finally {
-                lock.unlock();
-                eventLocks.remove(eventId);
-            }
-        }
-    }
 }
+

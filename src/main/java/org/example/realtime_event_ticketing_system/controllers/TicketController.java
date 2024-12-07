@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.realtime_event_ticketing_system.dto.ApiResponse;
+import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.dto.TicketDto;
 import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
@@ -139,5 +140,24 @@ public class TicketController {
             @PathVariable Long ticketId) {
         ticketService.deleteTicketByVendor(vendorId, ticketId);
         return ResponseEntity.ok(ApiResponse.success("Ticket deleted successfully", null));
+    }
+    @Operation(summary = "Get ticket statistics for an event")
+    @GetMapping("/event/{eventId}/stats")
+    public ResponseEntity<ApiResponse<?>> getTicketStats(@PathVariable Long eventId) {
+        try {
+            TicketConfigDto stats = ticketService.getTicketStats(eventId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("eventId", eventId);
+            response.put("totalTickets", stats.getTotalTickets());
+            response.put("availableTickets", stats.getAvailableTickets());
+            response.put("soldTickets", stats.getSoldTickets());
+            response.put("maxCapacity", stats.getMaxTicketCapacity());
+
+            return ResponseEntity.ok(ApiResponse.success("Ticket statistics retrieved successfully", response));
+        } catch (ResourceNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TicketingException(e.getMessage());
+        }
     }
 }

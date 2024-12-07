@@ -8,7 +8,9 @@ import org.example.realtime_event_ticketing_system.exceptions.TicketingException
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.repositories.TicketConfigRepository;
+import org.example.realtime_event_ticketing_system.repositories.TicketRepository;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
+import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfigServiceImpl implements ConfigService {
     private final TicketConfigRepository configRepository;
     private final EventRepository eventRepository;
+    private final TicketPoolService ticketPoolService;
+    private final TicketRepository ticketRepository;
 
     @Override
     @Transactional
@@ -28,6 +32,8 @@ public class ConfigServiceImpl implements ConfigService {
             throw new TicketingException("Event is already configured");
         }
 
+        validateConfiguration(configDto);
+
         TicketConfig config = TicketConfig.builder()
                 .event(event)
                 .totalTickets(configDto.getTotalTickets())
@@ -37,7 +43,11 @@ public class ConfigServiceImpl implements ConfigService {
                 .isConfigured(true)
                 .build();
 
-        return configRepository.save(config);
+        config = configRepository.save(config);
+
+        ticketPoolService.configureEvent(eventId, configDto);
+
+        return config;
     }
 
     @Override
@@ -45,12 +55,36 @@ public class ConfigServiceImpl implements ConfigService {
     public void resetEventConfig(Long eventId) {
         TicketConfig config = configRepository.findByEventId(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+
+        // Delete all tickets for this event
+        ticketRepository.deleteByEventId(eventId);
+
+        // Reset ticket pool
+        ticketPoolService.resetEvent(eventId);
+
+        // Delete the configuration
         configRepository.delete(config);
+
+        // Clear the configuration from the event
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        event.setTicketConfig(null);
+        eventRepository.save(event);
     }
 
     @Override
     public TicketConfig getEventConfig(Long eventId) {
         return configRepository.findByEventId(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+    }
+
+    private void validateConfiguration(TicketConfigDto configDto) {
+        if (configDto.getMaxTicketCapacity() > configDto.getTotalTickets()) {
+            throw new TicketingException("Max capacity cannot be greater than total tickets");
+        }
+
+        if (configDto.getTicketReleaseRate() > configDto.getMaxTicketCapacity()) {
+            throw new TicketingException("Ticket release rate cannot be greater than max capacity");
+        }
     }
 }
