@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    long countByIsPurchased(boolean isPurchased); // Changed to match the entity property name
+    long countByIsPurchased(boolean isPurchased);
+    long countByEventId(Long eventId);
+    void deleteByEventId(Long eventId);
 }

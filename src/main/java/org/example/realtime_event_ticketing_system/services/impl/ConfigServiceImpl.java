@@ -8,7 +8,10 @@ import org.example.realtime_event_ticketing_system.exceptions.TicketingException
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.repositories.TicketConfigRepository;
+import org.example.realtime_event_ticketing_system.repositories.TicketRepository;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
+import org.example.realtime_event_ticketing_system.services.TicketPoolService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfigServiceImpl implements ConfigService {
     private final TicketConfigRepository configRepository;
     private final EventRepository eventRepository;
+    private final TicketRepository ticketRepository;
+
+    @Lazy
+    private final TicketPoolService ticketPoolService;
 
     @Override
     @Transactional
@@ -37,7 +44,9 @@ public class ConfigServiceImpl implements ConfigService {
                 .isConfigured(true)
                 .build();
 
-        return configRepository.save(config);
+        TicketConfig savedConfig = configRepository.save(config);
+        ticketPoolService.configureEvent(eventId, configDto);
+        return savedConfig;
     }
 
     @Override
@@ -45,6 +54,14 @@ public class ConfigServiceImpl implements ConfigService {
     public void resetEventConfig(Long eventId) {
         TicketConfig config = configRepository.findByEventId(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+
+        // Delete all tickets for the event
+        ticketRepository.deleteByEventId(eventId);
+
+        // Reset ticket pool
+        ticketPoolService.resetEvent(eventId);
+
+        // Delete configuration
         configRepository.delete(config);
     }
 

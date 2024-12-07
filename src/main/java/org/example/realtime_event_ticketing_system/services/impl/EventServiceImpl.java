@@ -84,7 +84,7 @@ public class EventServiceImpl implements EventService {
             e.printStackTrace();
         }
         for(Event event : eventDto){
-            eventDtos.add(new EventDto(event.getId(),event.getEventName(),event.getEventCode(),event.getStatus(),event.getVenue(),event.getEventDateTime()));
+            eventDtos.add(new EventDto(event.getId(),event.getEventName(),event.getEventCode(),event.getEventDateTime(),event.getVenue(),event.getStatus()));
         }
 //        return eventRepository.findAll();
         return eventDtos;

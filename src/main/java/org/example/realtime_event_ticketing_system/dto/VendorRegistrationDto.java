@@ -1,7 +1,6 @@
     package org.example.realtime_event_ticketing_system.dto;
+
     import io.swagger.v3.oas.annotations.media.Schema;
-
-
     import lombok.Data;
 
     @Data

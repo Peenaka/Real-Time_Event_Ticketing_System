@@ -45,7 +45,7 @@ public class TicketServiceImpl implements TicketService {
 
         Ticket ticket = new Ticket();
         ticket.setEventName(ticketDto.getEventName());
-        ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
+        ticket.setPrice(ticketDto.getPrice());
         ticket.setVIP(ticketDto.isVIP());
         ticket.setVendor(vendor);
         ticket.setAvailable(true);
