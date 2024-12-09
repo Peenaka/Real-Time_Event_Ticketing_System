@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02-user-tables
+      author: system
+      changes:
+        - createTable:
+            tableName: vendor
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_vendor_user
+                    references: users(id)
+              - column:
+                  name: company_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    foreignKeyName: fk_customer_user
+                    references: users(id)
+              - column:
+                  name: is_vip
+                  type: boolean
+                  defaultValueBoolean: false
