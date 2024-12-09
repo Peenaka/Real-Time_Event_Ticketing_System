@@ -1,0 +1,83 @@
+<div class="container">
+    <h2>Configuration</h2>
+
+    <div class="config-form">
+        <h3>Create New Configuration</h3>
+        <form (ngSubmit)="createConfiguration()" #configForm="ngForm">
+            <div class="form-group">
+                <label for="eventId">Event ID</label>
+                <input type="number" id="eventId" name="eventId" [(ngModel)]="newConfig.eventId" required
+                    class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="totalTickets">Total Tickets</label>
+                <input type="number" id="totalTickets" name="totalTickets" [(ngModel)]="newConfig.totalTickets" required
+                    class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="ticketReleaseRate">Ticket Release Rate</label>
+                <input type="number" id="ticketReleaseRate" name="ticketReleaseRate"
+                    [(ngModel)]="newConfig.ticketReleaseRate" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="customerRetrievalRate">Customer Retrieval Rate</label>
+                <input type="number" id="customerRetrievalRate" name="customerRetrievalRate"
+                    [(ngModel)]="newConfig.customerRetrievalRate" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="maxTicketCapacity">Maximum Ticket Capacity</label>
+                <input type="number" id="maxTicketCapacity" name="maxTicketCapacity"
+                    [(ngModel)]="newConfig.maxTicketCapacity" required class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary" [disabled]="!configForm.form.valid">
+                Create Configuration
+            </button>
+        </form>
+    </div>
+
+    <div class="search-section">
+        <h3>Search Configuration</h3>
+        <div class="search-form">
+            <input type="number" [(ngModel)]="searchEventId" placeholder="Enter Event ID" class="form-control">
+            <button (click)="getConfiguration()" class="btn btn-primary">Get Config</button>
+            <button (click)="resetConfiguration()" class="btn btn-danger">Delete Config</button>
+        </div>
+    </div>
+
+    <!-- <div class="config-table" *ngIf="configurations.length > 0"> -->
+    <div class="config-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Event ID</th>
+                    <th>Event Name</th>
+                    <th>Total Tickets</th>
+                    <th>Ticket Release Rate</th>
+                    <th>Customer Retrieval Rate</th>
+                    <th>Maximum Ticket Capacity</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let config of configurations">
+                    <td>{{config.eventId}}</td>
+                    <td>{{config.eventName}}</td>
+                    <td>{{config.totalTickets}}</td>
+                    <td>{{config.ticketReleaseRate}}/min</td>
+                    <td>{{config.customerRetrievalRate}}/min</td>
+                    <td>{{config.maxTicketCapacity}}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" (click)="resetConfiguration(config.eventId)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

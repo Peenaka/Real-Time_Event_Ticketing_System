@@ -1,0 +1,78 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Register for Event Ticketing System</h2>
+        <div class="user-type-toggle">
+            <button [class.active]="userType === 'customer'" (click)="userType = 'customer'; onUserTypeChange()">
+                Customer
+            </button>
+            <button [class.active]="userType === 'vendor'" (click)="userType = 'vendor'; onUserTypeChange()">
+                Vendor
+            </button>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" formControlName="name" placeholder="Enter your name">
+                <div class="error"
+                    *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.errors?.['required']">
+                    Name is required
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email" placeholder="Enter your email">
+                <div class="error"
+                    *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']">
+                    Email is required
+                </div>
+                <div class="error"
+                    *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['email']">
+                    Please enter a valid email
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" formControlName="password" placeholder="Enter your password">
+                <div class="error"
+                    *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']">
+                    Password is required
+                </div>
+                <div class="error"
+                    *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['minlength']">
+                    Password must be at least 6 characters
+                </div>
+            </div>
+
+            <ng-container *ngIf="userType === 'customer'">
+                <div class="form-group checkbox">
+                    <label>
+                        <input type="checkbox" formControlName="isVIP">
+                        Register as VIP Customer
+                    </label>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="userType === 'vendor'">
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" formControlName="companyName" placeholder="Enter company name">
+                    <div class="error"
+                        *ngIf="registerForm.get('companyName')?.touched && registerForm.get('companyName')?.errors?.['required']">
+                        Company name is required
+                    </div>
+                </div>
+            </ng-container>
+
+            <div class="error-message" *ngIf="error">{{ error }}</div>
+
+            <button type="submit" [disabled]="!registerForm.valid">Register</button>
+        </form>
+
+        <div class="auth-links">
+            <a routerLink="/login">Already have an account? Login here</a>
+        </div>
+    </div>
+</div>
