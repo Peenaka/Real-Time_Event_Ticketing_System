@@ -39,7 +39,7 @@ public class TicketServiceImpl implements TicketService {
 
         TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
 
-        if (eventStats.getTotalTickets() == null) {
+        if (eventStats.getTotalTickets() != 0) {
             throw new TicketingException("Event not configured properly");
         }
 

@@ -73,9 +73,18 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public TicketConfig getEventConfig(Long eventId) {
-        return configRepository.findByEventId(eventId)
+    public TicketConfigDto getEventConfig(Long eventId) {
+        TicketConfig ticketConfig = configRepository.findByEventId(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+
+
+        return new TicketConfigDto(
+                ticketConfig.getTotalTickets(),
+                ticketConfig.getTicketReleaseRate(),
+                ticketConfig.getCustomerRetrievalRate(),
+                ticketConfig.getMaxTicketCapacity(),
+                ticketConfig.getEvent().getEventName(),
+                ticketConfig.getEvent().getId());
     }
 
     private void validateConfiguration(TicketConfigDto configDto) {

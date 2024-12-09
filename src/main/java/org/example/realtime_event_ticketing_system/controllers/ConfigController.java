@@ -58,7 +58,7 @@ public class ConfigController {
             @RequestParam String password) {
 
         authenticationUtils.validateConfigVendor(email, password);
-        TicketConfig config = configService.getEventConfig(eventId);
+        TicketConfigDto config = configService.getEventConfig(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event configuration retrieved successfully", config));
     }
 }

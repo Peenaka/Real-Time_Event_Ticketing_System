@@ -11,7 +11,7 @@ public interface EventService {
     Event createEvent(EventDto eventDto);
     Event updateEvent(Long eventId, EventDto eventDto);
     void deleteEvent(Long eventId);
-    Event getEventById(Long eventId);
+    EventDto getEventById(Long eventId);
     List<EventDto> getAllEvents();
     void configureEvent(Long eventId, TicketConfigDto config);
     void resetEvent(Long eventId);

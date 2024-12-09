@@ -9,7 +9,9 @@ import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.dto.TicketDto;
 import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
+import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.models.Ticket;
+import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.services.TicketService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +22,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
+
 public class TicketController {
     private final TicketService ticketService;
+    private final EventRepository eventRepository;
 
     @Operation(summary = "Add new tickets by vendor")
     @ApiResponses(value = {
@@ -146,8 +150,10 @@ public class TicketController {
     public ResponseEntity<ApiResponse<?>> getTicketStats(@PathVariable Long eventId) {
         try {
             TicketConfigDto stats = ticketService.getTicketStats(eventId);
+            Event event = eventRepository.getReferenceById(eventId);
             Map<String, Object> response = new HashMap<>();
             response.put("eventId", eventId);
+            response.put("eventName", event.getEventName());
             response.put("totalTickets", stats.getTotalTickets());
             response.put("availableTickets", stats.getAvailableTickets());
             response.put("soldTickets", stats.getSoldTickets());

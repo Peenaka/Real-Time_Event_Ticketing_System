@@ -43,7 +43,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public Event updateEvent(Long eventId, EventDto eventDto) {
-        Event event = getEventById(eventId);
+        Event event = eventRepository.getReferenceById(eventId);
 
         if (eventDto.getEventCode() != null &&
                 !event.getEventCode().equals(eventDto.getEventCode()) &&
@@ -63,15 +63,24 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void deleteEvent(Long eventId) {
-        Event event = getEventById(eventId);
+        Event event = eventRepository.getReferenceById(eventId);
         resetEvent(eventId); // Reset ticket pool before deleting
         eventRepository.delete(event);
     }
 
     @Override
-    public Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+    public EventDto getEventById(Long eventId) {
+        Event event = new Event();
+        try {
+            event = eventRepository.getReferenceById(eventId);
+        } catch (Exception e ){
+            e.printStackTrace();
+        }
+        return new EventDto(event.getId(),
+                event.getEventName(),
+                event.getEventCode(),
+                event.getStatus(),
+                event.getTicketConfig().isConfigured());
     }
 
     @Override
@@ -84,11 +93,22 @@ public class EventServiceImpl implements EventService {
             e.printStackTrace();
         }
         for(Event event : eventDto){
-            eventDtos.add(new EventDto(event.getId(),event.getEventName(),event.getEventCode(),event.getStatus()));
+            EventDto tempDto = new EventDto();
+            tempDto.setEventName(event.getEventName());
+            tempDto.setEventCode(event.getEventCode());
+            tempDto.setId(event.getId());
+            tempDto.setStatus(event.getStatus());
+            if(event.getTicketConfig() != null){
+                tempDto.setConfigured(event.getTicketConfig().isConfigured());
+            }else{
+                tempDto.setConfigured(false);
+            }
+            eventDtos.add(tempDto);
+
         }
-//        return eventRepository.findAll();
         return eventDtos;
     }
+
     @Override
     @Transactional
     public void configureEvent(Long eventId, TicketConfigDto config) {

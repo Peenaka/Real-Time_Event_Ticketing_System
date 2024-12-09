@@ -96,7 +96,6 @@
             if (!passwordEncoder.matches(dto.getPassword(), vendor.getPassword())) {
                 throw new RuntimeException("Invalid credentials");
             }
-
             return vendor;
         }
         @Override

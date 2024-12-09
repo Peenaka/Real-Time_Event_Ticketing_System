@@ -81,7 +81,7 @@ public class EventController {
     @Operation(summary = "Get event by ID")
     @GetMapping("/{eventId}")
     public ResponseEntity<ApiResponse<?>> getEventById(@PathVariable Long eventId) {
-        Event event = eventService.getEventById(eventId);
+        EventDto event = eventService.getEventById(eventId);
         return ResponseEntity.ok(ApiResponse.success("Event retrieved successfully", event));
     }
 }

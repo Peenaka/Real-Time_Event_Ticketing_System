@@ -1,10 +1,7 @@
 package org.example.realtime_event_ticketing_system.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +24,9 @@ public class Event {
     @Column(nullable = false)
     private String eventName;
 
-    @Enumerated(EnumType.STRING)
+   // @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EventStatus status;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "vendor_id")
@@ -54,7 +52,7 @@ public class Event {
         updatedAt = LocalDateTime.now();
     }
 
-    public Event(EventStatus status, String eventName, String eventCode, Long id) {
+    public Event(String status, String eventName, String eventCode, Long id) {
         this.status = status;
         this.eventName = eventName;
         this.eventCode = eventCode;

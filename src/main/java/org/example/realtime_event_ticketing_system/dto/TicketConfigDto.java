@@ -28,7 +28,18 @@ public class TicketConfigDto {
     @Min(value = 1, message = "Max ticket capacity must be at least 1")
     private Integer maxTicketCapacity;
 
-    private Integer availableTickets;
-    private Integer soldTickets;
+    private int availableTickets;
+    private int soldTickets;
+    private String eventName;
+    private long id;
 
+
+    public TicketConfigDto(int totalTickets, int ticketReleaseRate, int customerRetrievalRate, int maxTicketCapacity, String eventName, long id) {
+        this.totalTickets = totalTickets;
+        this.ticketReleaseRate = ticketReleaseRate;
+        this.customerRetrievalRate = customerRetrievalRate;
+        this.maxTicketCapacity = maxTicketCapacity;
+        this.eventName = eventName;
+        this.id = id;
+    }
 }
