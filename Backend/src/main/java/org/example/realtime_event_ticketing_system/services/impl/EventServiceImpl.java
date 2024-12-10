@@ -2,7 +2,6 @@ package org.example.realtime_event_ticketing_system.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
-import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundException;
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
@@ -18,6 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+
     private final EventRepository eventRepository;
     private final TicketPoolService ticketPoolService;
 

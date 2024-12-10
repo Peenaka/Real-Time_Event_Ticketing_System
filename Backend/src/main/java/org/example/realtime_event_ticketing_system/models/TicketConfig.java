@@ -2,10 +2,7 @@ package org.example.realtime_event_ticketing_system.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 
 @Entity
@@ -20,12 +17,15 @@ public class TicketConfig {
 
     @OneToOne
     @JoinColumn(name = "event_id")
+    @ToString.Exclude
     private Event event;
 
     private Integer totalTickets;
     private Integer ticketReleaseRate;
     private Integer customerRetrievalRate;
     private Integer maxTicketCapacity;
+    private Integer availableTickets;
+    private Integer soldTickets;
     private boolean isConfigured;
 
     @JsonIgnore

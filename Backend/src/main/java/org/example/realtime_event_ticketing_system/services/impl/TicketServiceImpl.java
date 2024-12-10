@@ -10,12 +10,14 @@ import org.example.realtime_event_ticketing_system.models.*;
 import org.example.realtime_event_ticketing_system.repositories.*;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.example.realtime_event_ticketing_system.services.TicketService;
+import org.example.realtime_event_ticketing_system.utils.LockManager;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 @Service
@@ -28,52 +30,108 @@ public class TicketServiceImpl implements TicketService {
     private final PurchaseRepository purchaseRepository;
     private final EventRepository eventRepository;
 
+    LockManager lockManager = new LockManager();
+
+//    @Override
+//    @Transactional
+//    public Ticket createTicket(TicketDto ticketDto, Long vendorId, Long eventId) {
+//        Vendor vendor = vendorRepository.findById(vendorId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
+//
+//        Event event = eventRepository.findById(eventId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+//
+//        TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
+//
+//        if (event.getTicketConfig().isConfigured()) {
+//            throw new TicketingException("Event not configured properly");
+//        }
+//
+//        int currentTotal = eventStats.getSoldTickets() + eventStats.getAvailableTickets();
+//        if (currentTotal + ticketDto.getTicketCount() > eventStats.getTotalTickets()) {
+//            throw new TicketingException("Cannot add tickets. Would exceed total ticket limit.");
+//        }
+//
+//        List<Ticket> tickets = new ArrayList<>();
+//        for (int i = 0; i < ticketDto.getTicketCount(); i++) {
+//            Ticket ticket = new Ticket();
+//            ticket.setEventName(ticketDto.getEventName());
+//            ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
+//            ticket.setEventDateTime(ticketDto.getEventDateTime());
+//            ticket.setVenue(ticketDto.getVenue());
+//            ticket.setVIP(ticketDto.isVIP());
+//            ticket.setVendor(vendor);
+//            ticket.setEvent(event);
+//            ticket.setAvailable(true);
+//
+//            ticket = ticketRepository.save(ticket);
+//            tickets.add(ticket);
+//
+//            try {
+//                boolean added = ticketPoolService.addTickets(eventId, ticket);
+//                if (!added) {
+//                    throw new TicketingException("Failed to add ticket to pool");
+//                }
+//            } catch (InterruptedException e) {
+//                throw new TicketingException("Failed to add ticket to pool");
+//            }
+//        }
+//
+//        return tickets.get(0); // Return first ticket as reference
+//    }
+
     @Override
     @Transactional
     public Ticket createTicket(TicketDto ticketDto, Long vendorId, Long eventId) {
-        Vendor vendor = vendorRepository.findById(vendorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
+        ReentrantLock lock = lockManager.getLock(eventId);
 
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        lock.lock(); // Lock for this event
+        try {
+            Vendor vendor = vendorRepository.findById(vendorId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
 
-        TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
 
-        if (eventStats.getTotalTickets() != 0) {
-            throw new TicketingException("Event not configured properly");
-        }
+            TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
 
-        int currentTotal = eventStats.getSoldTickets() + eventStats.getAvailableTickets();
-        if (currentTotal + ticketDto.getTicketCount() > eventStats.getTotalTickets()) {
-            throw new TicketingException("Cannot add tickets. Would exceed total ticket limit.");
-        }
+            if (!event.getTicketConfig().isConfigured()) {
+                throw new TicketingException("Event not configured properly");
+            }
 
-        List<Ticket> tickets = new ArrayList<>();
-        for (int i = 0; i < ticketDto.getTicketCount(); i++) {
-            Ticket ticket = new Ticket();
-            ticket.setEventName(ticketDto.getEventName());
-            ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
-            ticket.setEventDateTime(ticketDto.getEventDateTime());
-            ticket.setVenue(ticketDto.getVenue());
-            ticket.setVIP(ticketDto.isVIP());
-            ticket.setVendor(vendor);
-            ticket.setEvent(event);
-            ticket.setAvailable(true);
+            int currentTotal = eventStats.getSoldTickets() + eventStats.getAvailableTickets();
+            if (currentTotal + ticketDto.getTicketCount() > eventStats.getTotalTickets()) {
+                throw new TicketingException("Cannot add tickets. Would exceed total ticket limit.");
+            }
 
-            ticket = ticketRepository.save(ticket);
-            tickets.add(ticket);
+            List<Ticket> tickets = new ArrayList<>();
+            for (int i = 0; i < ticketDto.getTicketCount(); i++) {
+                Ticket ticket = new Ticket();
+                ticket.setEventName(ticketDto.getEventName());
+                ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
+                ticket.setEventDateTime(ticketDto.getEventDateTime());
+                ticket.setVenue(ticketDto.getVenue());
+                ticket.setVIP(ticketDto.isVIP());
+                ticket.setVendor(vendor);
+                ticket.setEvent(event);
+                ticket.setAvailable(true);
 
-            try {
-                boolean added = ticketPoolService.addTickets(eventId, ticket);
-                if (!added) {
+                tickets.add(ticketRepository.save(ticket));
+
+                try {
+                    boolean added = ticketPoolService.addTickets(eventId, ticket);
+                    if (!added) {
+                        throw new TicketingException("Failed to add ticket to pool");
+                    }
+                } catch (InterruptedException e) {
                     throw new TicketingException("Failed to add ticket to pool");
                 }
-            } catch (InterruptedException e) {
-                throw new TicketingException("Failed to add ticket to pool");
             }
-        }
 
-        return tickets.get(0); // Return first ticket as reference
+            return tickets.get(0); // Return first ticket as reference
+        } finally {
+            lock.unlock(); // Always unlock in the finally block
+        }
     }
 
     @Override

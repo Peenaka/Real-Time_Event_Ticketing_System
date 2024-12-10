@@ -13,6 +13,7 @@ import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.models.Ticket;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.services.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 
 public class TicketController {
-    private final TicketService ticketService;
+//    private final TicketService ticketService;
+    @Autowired
+    TicketService ticketService;
     private final EventRepository eventRepository;
 
     @Operation(summary = "Add new tickets by vendor")
@@ -33,6 +36,7 @@ public class TicketController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Vendor not found")
     })
+
     @PostMapping("/vendor/{vendorId}/event/{eventId}")
     public ResponseEntity<ApiResponse<?>> createTickets(
             @PathVariable Long vendorId,

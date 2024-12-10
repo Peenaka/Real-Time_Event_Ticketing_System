@@ -42,4 +42,22 @@ public class TicketConfigDto {
         this.eventName = eventName;
         this.id = id;
     }
+
+    public @NotNull(message = "Total tickets is required") @Min(value = 1, message = "Total tickets must be at least 1") Integer getTotalTickets() {
+        return totalTickets;
+    }
+
+    public @NotNull(message = "Ticket release rate is required") @Min(value = 1, message = "Ticket release rate must be at least 1") Integer getTicketReleaseRate() {
+        return ticketReleaseRate;
+    }
+
+    public @NotNull(message = "Customer retrieval rate is required") @Min(value = 1, message = "Customer retrieval rate must be at least 1") Integer getCustomerRetrievalRate() {
+        return customerRetrievalRate;
+    }
+
+    public @NotNull(message = "Max ticket capacity is required") @Min(value = 1, message = "Max ticket capacity must be at least 1") Integer getMaxTicketCapacity() {
+        return maxTicketCapacity;
+    }
+
+
 }

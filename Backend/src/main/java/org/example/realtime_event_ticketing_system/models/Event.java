@@ -36,6 +36,7 @@ public class Event {
     private List<Ticket> tickets = new ArrayList<>();
 
     @OneToOne(mappedBy = "event", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private TicketConfig ticketConfig;
 
     private LocalDateTime createdAt;
@@ -58,4 +59,6 @@ public class Event {
         this.eventCode = eventCode;
         this.id = id;
     }
+
+
 }
