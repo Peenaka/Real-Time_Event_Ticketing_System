@@ -5,12 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class LockManager {
     private final ConcurrentHashMap<Long, ReentrantLock> lockMap = new ConcurrentHashMap<>();
-
     public ReentrantLock getLock(Long eventId) {
         return lockMap.computeIfAbsent(eventId, id -> new ReentrantLock());
-    }
-
-    public void removeLock(Long eventId) {
-        lockMap.remove(eventId);
     }
 }

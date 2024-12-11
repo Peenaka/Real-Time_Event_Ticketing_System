@@ -15,6 +15,11 @@
     import java.util.HashMap;
     import java.util.Map;
 
+    /**
+     * Handles authentication-related requests for the Real-Time Event Ticketing System API.
+     * Provides endpoints for customer and vendor registration, login, and other authentication-related operations.
+     */
+
     @RestController
     @RequestMapping("/api/auth")
     public class AuthController {

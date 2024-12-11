@@ -13,6 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Handles event-related operations for the Real-Time Event Ticketing System API.
+ * Provides endpoints for creating, retrieving, updating, and deleting events, as well as managing event tickets.
+ */
+
 
 @RestController
 @RequestMapping("/api/events")

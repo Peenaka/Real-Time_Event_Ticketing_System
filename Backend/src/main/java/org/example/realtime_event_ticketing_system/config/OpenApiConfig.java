@@ -7,9 +7,13 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Customizes the OpenAPI (Swagger) documentation for the Real-Time Event Ticketing API.
+ * This bean defines the metadata displayed in the API documentation, including title, version, description, contact information, and license details.
+ */
+
 @Configuration
 public class OpenApiConfig {
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

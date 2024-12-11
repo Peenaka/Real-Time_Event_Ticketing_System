@@ -11,11 +11,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface TicketConfigRepository extends JpaRepository<TicketConfig, Long> {
-    Optional<TicketConfig> findByEventId(Long eventId);
-
-    @Lock(LockModeType.OPTIMISTIC)
-    @Query("SELECT tc FROM TicketConfig tc WHERE tc.event.id = :eventId")
-    Optional<TicketConfig> findByEventIdWithLock(@Param("eventId") Long eventId);
-
-    boolean existsByEventId(Long eventId);
+    Optional<TicketConfig> findByEventId(Long eventId); // Find event with pessimistic lock for updates
+    boolean existsByEventId(Long eventId); // Check if event exists
 }

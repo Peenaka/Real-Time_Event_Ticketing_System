@@ -7,6 +7,7 @@ import org.example.realtime_event_ticketing_system.exceptions.ResourceNotFoundEx
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Event;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
+import org.example.realtime_event_ticketing_system.repositories.PurchaseRepository;
 import org.example.realtime_event_ticketing_system.repositories.TicketConfigRepository;
 import org.example.realtime_event_ticketing_system.repositories.TicketRepository;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
@@ -21,9 +22,9 @@ public class ConfigServiceImpl implements ConfigService {
     private final EventRepository eventRepository;
     private final TicketPoolService ticketPoolService;
     private final TicketRepository ticketRepository;
+    private final PurchaseRepository purchaseRepository;
 
     @Override
-    @Transactional
     public TicketConfig configureEvent(Long eventId, TicketConfigDto configDto) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
@@ -40,12 +41,14 @@ public class ConfigServiceImpl implements ConfigService {
                 .ticketReleaseRate(configDto.getTicketReleaseRate())
                 .customerRetrievalRate(configDto.getCustomerRetrievalRate())
                 .maxTicketCapacity(configDto.getMaxTicketCapacity())
+                .availableTickets(configDto.getTotalTickets())
+                .soldTickets(configDto.getSoldTickets())
                 .isConfigured(true)
                 .build();
 
         config = configRepository.save(config);
 
-        ticketPoolService.configureEvent(eventId, configDto);
+//        ticketPoolService.configureEvent(eventId, configDto);
 
         return config;
     }
@@ -55,6 +58,7 @@ public class ConfigServiceImpl implements ConfigService {
     public void resetEventConfig(Long eventId) {
         TicketConfig config = configRepository.findByEventId(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+        purchaseRepository.deleteByEventId(eventId);
 
         // Delete all tickets for this event
         ticketRepository.deleteByEventId(eventId);

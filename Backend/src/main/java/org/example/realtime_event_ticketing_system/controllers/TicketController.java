@@ -16,16 +16,21 @@ import org.example.realtime_event_ticketing_system.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+/**
+ * Handles event-related operations for the Real-Time Event Ticketing System API.
+ * Provides endpoints for creating, retrieving, updating, and deleting events, as well as managing event tickets.
+ */
 
 @RestController
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
 
 public class TicketController {
-//    private final TicketService ticketService;
+
     @Autowired
     TicketService ticketService;
     private final EventRepository eventRepository;
@@ -109,7 +114,8 @@ public class TicketController {
             Ticket ticket = ticketService.getTicketDetails(ticketId);
             Map<String, Object> response = new HashMap<>();
             response.put("ticketId", ticket.getId());
-            response.put("eventName", ticket.getEventName());
+//            response.put("eventName", ticket.getEventName());
+            response.put("eventId",ticket.getEvent().getId());
             response.put("price", ticket.getPrice());
             response.put("isVIP", ticket.isVIP());
             response.put("eventDateTime", ticket.getCreatedAt());
@@ -149,6 +155,7 @@ public class TicketController {
         ticketService.deleteTicketByVendor(vendorId, ticketId);
         return ResponseEntity.ok(ApiResponse.success("Ticket deleted successfully", null));
     }
+
     @Operation(summary = "Get ticket statistics for an event")
     @GetMapping("/event/{eventId}/stats")
     public ResponseEntity<ApiResponse<?>> getTicketStats(@PathVariable Long eventId) {
@@ -170,4 +177,28 @@ public class TicketController {
             throw new TicketingException(e.getMessage());
         }
     }
+
+    @Operation(summary = "Get all ticket details")
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<?>> getAllTicketDetails() {
+        try {
+            List<Ticket> tickets = ticketService.getAllTickets();
+            List<Map<String, Object>> ticketDetails = tickets.stream().map(ticket -> {
+                Map<String, Object> response = new HashMap<>();
+                response.put("ticketId", ticket.getId());
+                response.put("eventName", ticket.getEventName());
+                response.put("price", ticket.getPrice());
+                response.put("isVIP", ticket.isVIP());
+                response.put("eventDateTime", ticket.getEventDateTime());
+                response.put("isAvailable", ticket.isAvailable());
+                return response;
+            }).toList();
+
+            return ResponseEntity.ok(ApiResponse.success("All ticket details retrieved successfully", ticketDetails));
+        } catch (Exception e) {
+            throw new TicketingException("Failed to fetch ticket details: " + e.getMessage());
+        }
+    }
+
+
 }

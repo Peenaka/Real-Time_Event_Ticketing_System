@@ -8,12 +8,8 @@ import org.example.realtime_event_ticketing_system.models.Vendor;
 
 public interface AuthService {
     Customer registerCustomer(CustomerRegistrationDto dto);
-
     Vendor registerVendor(VendorRegistrationDto dto);
-
     Customer loginCustomer(LoginDto dto);
-
     Vendor loginVendor(LoginDto dto);
     boolean isConfigVendor(String email, String password);
-
 }

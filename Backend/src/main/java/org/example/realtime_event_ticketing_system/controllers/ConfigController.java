@@ -12,6 +12,11 @@ import org.example.realtime_event_ticketing_system.utils.AuthenticationUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Manages configuration settings for the Real-Time Event Ticketing System API.
+ * Provides endpoints for retrieving and updating system configuration, such as email and password settings.
+ */
+
 @RestController
 @RequestMapping("/api/config")
 @RequiredArgsConstructor

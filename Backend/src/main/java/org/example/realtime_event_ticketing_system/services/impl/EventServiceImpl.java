@@ -4,6 +4,7 @@ import org.example.realtime_event_ticketing_system.dto.EventDto;
 import org.example.realtime_event_ticketing_system.dto.TicketConfigDto;
 import org.example.realtime_event_ticketing_system.exceptions.TicketingException;
 import org.example.realtime_event_ticketing_system.models.Event;
+import org.example.realtime_event_ticketing_system.models.TicketConfig;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.services.EventService;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
@@ -70,17 +71,28 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto getEventById(Long eventId) {
-        Event event = new Event();
+        Event event = null;
         try {
             event = eventRepository.getReferenceById(eventId);
-        } catch (Exception e ){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new EventDto(event.getId(),
+        if (event == null) {
+            return null;  // Return null or throw a custom exception if event is not found
+        }
+
+        boolean isConfigured = false;
+        if (event.getTicketConfig() != null) {
+            isConfigured = event.getTicketConfig().isConfigured();
+        }
+
+        return new EventDto(
+                event.getId(),
                 event.getEventName(),
                 event.getEventCode(),
                 event.getStatus(),
-                event.getTicketConfig().isConfigured());
+                isConfigured
+        );
     }
 
     @Override

@@ -32,54 +32,6 @@ public class TicketServiceImpl implements TicketService {
 
     LockManager lockManager = new LockManager();
 
-//    @Override
-//    @Transactional
-//    public Ticket createTicket(TicketDto ticketDto, Long vendorId, Long eventId) {
-//        Vendor vendor = vendorRepository.findById(vendorId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
-//
-//        Event event = eventRepository.findById(eventId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-//
-//        TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
-//
-//        if (event.getTicketConfig().isConfigured()) {
-//            throw new TicketingException("Event not configured properly");
-//        }
-//
-//        int currentTotal = eventStats.getSoldTickets() + eventStats.getAvailableTickets();
-//        if (currentTotal + ticketDto.getTicketCount() > eventStats.getTotalTickets()) {
-//            throw new TicketingException("Cannot add tickets. Would exceed total ticket limit.");
-//        }
-//
-//        List<Ticket> tickets = new ArrayList<>();
-//        for (int i = 0; i < ticketDto.getTicketCount(); i++) {
-//            Ticket ticket = new Ticket();
-//            ticket.setEventName(ticketDto.getEventName());
-//            ticket.setPrice(BigDecimal.valueOf(ticketDto.getPrice()));
-//            ticket.setEventDateTime(ticketDto.getEventDateTime());
-//            ticket.setVenue(ticketDto.getVenue());
-//            ticket.setVIP(ticketDto.isVIP());
-//            ticket.setVendor(vendor);
-//            ticket.setEvent(event);
-//            ticket.setAvailable(true);
-//
-//            ticket = ticketRepository.save(ticket);
-//            tickets.add(ticket);
-//
-//            try {
-//                boolean added = ticketPoolService.addTickets(eventId, ticket);
-//                if (!added) {
-//                    throw new TicketingException("Failed to add ticket to pool");
-//                }
-//            } catch (InterruptedException e) {
-//                throw new TicketingException("Failed to add ticket to pool");
-//            }
-//        }
-//
-//        return tickets.get(0); // Return first ticket as reference
-//    }
-
     @Override
     @Transactional
     public Ticket createTicket(TicketDto ticketDto, Long vendorId, Long eventId) {
@@ -139,6 +91,7 @@ public class TicketServiceImpl implements TicketService {
         return ticketPoolService.getEventStats(eventId);
     }
 
+
     @Transactional
     @Override
     public Ticket purchaseTicket(Long customerId, Long eventId) throws InterruptedException {
@@ -147,6 +100,7 @@ public class TicketServiceImpl implements TicketService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
 
         Ticket ticket = ticketPoolService.purchaseTicket(eventId, customer.isVIP());
         if (ticket == null) {
@@ -212,5 +166,15 @@ public class TicketServiceImpl implements TicketService {
         }
 
         ticketRepository.delete(ticket);
+    }
+    @Override
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteTicket(Long ticketId) {
+        purchaseRepository.deleteByTicketId(ticketId); // Delete purchases first
+        ticketRepository.deleteById(ticketId);        // Then delete the ticket
     }
 }
