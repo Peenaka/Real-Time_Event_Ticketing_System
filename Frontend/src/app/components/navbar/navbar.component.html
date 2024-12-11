@@ -1,0 +1,12 @@
+
+<nav *ngIf="showNavbar" class="navbar">
+    <div class="navbar-brand">Event Ticketing System</div>
+    <div class="navbar-links">
+        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a> 
+        <a routerLink="/events" routerLinkActive="active">Events</a>
+        <a routerLink="/configurations" routerLinkActive="active">Configurations</a>
+        <a routerLink="/tickets" routerLinkActive="active">Tickets</a>
+        <a routerLink="/login" routerLinkActive="active">Login</a>
+        <a routerLink="/logout" routerLinkActive="active">Logout</a>    
+    </div>
+</nav>

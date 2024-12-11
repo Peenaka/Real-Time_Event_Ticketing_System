@@ -1,0 +1,42 @@
+<div class="container">
+    <h2>Events Management</h2>
+
+    <div class="actions-bar">
+        <div class="search-section">
+            <input type="number" [(ngModel)]="searchId" placeholder="Search Event By ID" class="search-input">
+            <button (click)="searchEvent()" class="btn btn-primary">Enter</button>
+            <button (click)="loadAllEvents()" class="btn btn-secondary">All Events</button>
+        </div>
+        <button (click)="showCreateDialog()" class="btn btn-success">Create New Event</button>
+    </div>
+
+    <table class="events-table">
+      <thead>
+        <tr>
+          <th>Event ID</th>
+          <th>Event Name</th>
+          <th>Event Code</th>
+          <th>Status</th>
+          <th>Is Configured</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of events">
+          <td>{{ event.id }}</td>
+          <td>{{ event.eventName }}</td>
+          <td>{{ event.eventCode }}</td>
+          <td>{{ event.status }}</td>
+          <td>{{ event.configured ? 'Yes' : 'No' }}</td>
+          <td>
+            <button (click)="updateEvent(event)" class="btn btn-update">Update</button>
+            <button (click)="deleteEvent(event.id)" class="btn btn-delete">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+<app-create-event-dialog *ngIf="showDialog" (onSubmitEvent)="createEvent($event)"
+  (onCloseDialog)="hideCreateDialog()"></app-create-event-dialog>
+
+</div>

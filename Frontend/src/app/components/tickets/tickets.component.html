@@ -1,0 +1,168 @@
+<div class="container">
+    <h2 class="page-title">Ticket Management System</h2>
+
+    <div *ngIf="error" class="error-message">
+        {{ error }}
+    </div>
+
+    <!-- Event Stats Section -->
+    <div class="card stats-section">
+        <h3 class="card-header">Event Statistics</h3>
+        <div class="card-body">
+            <div class="search-controls">
+                <div class="search-form">
+                    <input type="number" [(ngModel)]="searchEventId" placeholder="Search by Event ID"
+                        class="form-control">
+                    <button (click)="getEventStats()" class="btn btn-primary">Get Event Stats</button>
+                    <button (click)="loadAllStats()" class="btn btn-secondary">View All Events</button>
+                </div>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event ID</th>
+                        <th>Event Name</th>
+                        <th>Sold Tickets</th>
+                        <th>Available Tickets</th>
+                        <th>Total Tickets</th>
+                        <th>Max Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="eventStats">
+                        <td>{{eventStats.eventId}}</td>
+                        <td>{{eventStats.eventName}}</td>
+                        <td>{{eventStats.soldTickets}}</td>
+                        <td>{{eventStats.availableTickets}}</td>
+                        <td>{{eventStats.totalTickets}}</td>
+                        <td>{{eventStats.maxCapacity}}</td>
+                    </tr>
+                    <tr *ngFor="let stats of allEventStats" [class.highlight]="stats.availableTickets > 0">
+                        <td>{{stats.eventId}}</td>
+                        <td>{{stats.eventName}}</td>
+                        <td>{{stats.soldTickets}}</td>
+                        <td>{{stats.availableTickets}}</td>
+                        <td>{{stats.totalTickets}}</td>
+                        <td>{{stats.maxCapacity}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Ticket Creation Section - Only visible to vendors -->
+    <div class="card ticket-form" *ngIf="isVendor">
+        <h3 class="card-header">Create New Ticket</h3>
+        <div class="card-body">
+            <form (ngSubmit)="createTicket()" #ticketForm="ngForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName" name="eventName" [(ngModel)]="newTicket.eventName" required
+                        class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" name="price" [(ngModel)]="newTicket.price" required
+                            class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ticketCount">Ticket Count</label>
+                        <input type="number" id="ticketCount" name="ticketCount" [(ngModel)]="newTicket.ticketCount"
+                            required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="eventDateTime">Event Date & Time</label>
+                        <input type="datetime-local" id="eventDateTime" name="eventDateTime"
+                            [(ngModel)]="newTicket.eventDateTime" required class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="venue">Venue</label>
+                        <input type="text" id="venue" name="venue" [(ngModel)]="newTicket.venue" required
+                            class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="isVIP">VIP Status</label>
+                    <select id="isVIP" name="isVIP" [(ngModel)]="newTicket.isVIP" required class="form-control">
+                        <option [ngValue]="false">Regular</option>
+                        <option [ngValue]="true">VIP</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success" [disabled]="!ticketForm.form.valid">
+                    Create Ticket
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Details Section -->
+    <div class="card ticket-details">
+        <h3 class="card-header">Ticket Details</h3>
+        <div class="card-body">
+            <div class="search-controls">
+                <div class="search-form">
+                    <input type="number" [(ngModel)]="searchTicketId" placeholder="Search by Ticket ID"
+                        class="form-control">
+                    <button (click)="getTicketDetails()" class="btn btn-primary">Get Ticket Details</button>
+                    <button (click)="loadAllTickets()" class="btn btn-secondary">View All Tickets</button>
+                </div>
+            </div>
+
+            <div class="details-table">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Event Date Time</th>
+                            <th>Price</th>
+                            <th>Event Name</th>
+                            <th>Ticket ID</th>
+                            <th>VIP Status</th>
+                            <th>Status</th>
+                            <th *ngIf="isCustomer">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="ticketDetails">
+                            <td>{{ticketDetails.eventDateTime | date:'yyyy-MM-dd HH:mm'}}</td>
+                            <td>{{ticketDetails.price | currency}}</td>
+                            <td>{{ticketDetails.eventName}}</td>
+                            <td>{{ticketDetails.ticketId}}</td>
+                            <td>{{ticketDetails.isVIP ? 'Yes' : 'No'}}</td>
+                            <td>{{ticketDetails.isAvailable ? 'Available' : 'Sold'}}</td>
+                            <td *ngIf="isCustomer">
+                                <button class="btn btn-sm btn-success" *ngIf="ticketDetails.isAvailable"
+                                    (click)="purchaseTicket(ticketDetails.ticketId!)">
+                                    Purchase
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngFor="let ticket of allTickets" [class.highlight]="ticket.isAvailable">
+                            <td>{{ticket.eventDateTime | date:'yyyy-MM-dd HH:mm'}}</td>
+                            <td>{{ticket.price | currency}}</td>
+                            <td>{{ticket.eventName}}</td>
+                            <td>{{ticket.ticketId}}</td>
+                            <td>{{ticket.isVIP ? 'Yes' : 'No'}}</td>
+                            <td>{{ticket.isAvailable ? 'Available' : 'Sold'}}</td>
+                            <td *ngIf="isCustomer">
+                                <button class="btn btn-sm btn-success" *ngIf="ticket.isAvailable"
+                                    (click)="purchaseTicket(ticket.ticketId!)">
+                                    Purchase
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

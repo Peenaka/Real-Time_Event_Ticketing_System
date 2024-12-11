@@ -1,0 +1,30 @@
+#notification-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.notification {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #fff;
+  animation: fade-in-out 5s ease-in-out forwards;
+}
+n
+.notification.success {
+  background-color: #4CAF50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
