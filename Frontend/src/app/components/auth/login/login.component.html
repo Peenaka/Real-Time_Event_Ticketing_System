@@ -9,7 +9,8 @@
                 Vendor
             </button>
         </div>
-
+        
+        <!-- Authentication form -->
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <div class="form-group">
                 <label for="email">Email</label>
@@ -40,6 +41,7 @@
         </form>
 
         <div class="auth-links">
+                        <!-- Link to registration page -->
             <a routerLink="/register">Don't have an account? Register here</a>
         </div>
     </div>

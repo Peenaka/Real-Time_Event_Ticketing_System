@@ -11,6 +11,7 @@ export interface Ticket {
 }
 
 export interface TicketDto {
+  eventId: number;
   eventName: string;
   price: number;
   eventDateTime: Date;
