@@ -112,10 +112,11 @@ public class TicketController {
     public ResponseEntity<ApiResponse<?>> getTicketDetails(@PathVariable Long ticketId) {
         try {
             Ticket ticket = ticketService.getTicketDetails(ticketId);
+            Event event = ticket.getEvent();
             Map<String, Object> response = new HashMap<>();
             response.put("ticketId", ticket.getId());
-//            response.put("eventName", ticket.getEventName());
-            response.put("eventId",ticket.getEvent().getId());
+            response.put("eventName", ticket.getEventName());
+            response.put("eventId",event.getId());
             response.put("price", ticket.getPrice());
             response.put("isVIP", ticket.isVIP());
             response.put("eventDateTime", ticket.getCreatedAt());
@@ -183,10 +184,12 @@ public class TicketController {
     public ResponseEntity<ApiResponse<?>> getAllTicketDetails() {
         try {
             List<Ticket> tickets = ticketService.getAllTickets();
+
             List<Map<String, Object>> ticketDetails = tickets.stream().map(ticket -> {
                 Map<String, Object> response = new HashMap<>();
                 response.put("ticketId", ticket.getId());
                 response.put("eventName", ticket.getEventName());
+                response.put("eventId", ticket.getEvent().getId());
                 response.put("price", ticket.getPrice());
                 response.put("isVIP", ticket.isVIP());
                 response.put("eventDateTime", ticket.getEventDateTime());
