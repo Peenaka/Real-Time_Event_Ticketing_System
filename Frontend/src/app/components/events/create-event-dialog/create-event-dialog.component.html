@@ -15,14 +15,14 @@
             <div class="form-group">
                 <label for="status">Status</label>
                 <select id="status" name="status" [(ngModel)]="event.status" required class="form-control">
-                    <option value="UPCOMING">Upcoming</option>
-                    <option value="OPEN">Open</option>
-                    <option value="CLOSED">Closed</option>
+                    <option value="CREATED">CREATED</option>
+                    <option value="UPDATED">UPDATED</option>
+                    <option value="CLOSED">CLOSED</option>
                 </select>
             </div>
             <div class="button-group">
                 <button type="submit" class="btn btn-primary" [disabled]="!eventForm.form.valid">Create</button>
-                <button type="button" class="btn btn-secondary" (click)="onClose()">Cancel</button>
+                <button type="button" (click)="onClose()">Cancel</button>
             </div>
         </form>
     </div>

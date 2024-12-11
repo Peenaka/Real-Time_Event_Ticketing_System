@@ -1,6 +1,10 @@
 <div class="container">
     <h2 class="page-title">Ticket Management System</h2>
 
+    <div *ngIf="error" class="error-message">
+        {{ error }}
+    </div>
+
     <!-- Event Stats Section -->
     <div class="card stats-section">
         <h3 class="card-header">Event Statistics</h3>
@@ -14,44 +18,41 @@
                 </div>
             </div>
 
-            <!-- <div class="stats-table" *ngIf="eventStats || allEventStats.length > 0"> -->
-                
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Event ID</th>
-                            <th>Event Name</th>
-                            <th>Sold Tickets</th>
-                            <th>Available Tickets</th>
-                            <th>Total Tickets</th>
-                            <th>Max Capacity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngIf="eventStats">
-                            <td>{{eventStats.eventId}}</td>
-                            <td>{{eventStats.eventName}}</td>
-                            <td>{{eventStats.soldTickets}}</td>
-                            <td>{{eventStats.availableTickets}}</td>
-                            <td>{{eventStats.totalTickets}}</td>
-                            <td>{{eventStats.maxCapacity}}</td>
-                        </tr>
-                        <tr *ngFor="let stats of allEventStats" [class.highlight]="stats.availableTickets > 0">
-                            <td>{{stats.eventId}}</td>
-                            <td>{{stats.eventName}}</td>
-                            <td>{{stats.soldTickets}}</td>
-                            <td>{{stats.availableTickets}}</td>
-                            <td>{{stats.totalTickets}}</td>
-                            <td>{{stats.maxCapacity}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Event ID</th>
+                        <th>Event Name</th>
+                        <th>Sold Tickets</th>
+                        <th>Available Tickets</th>
+                        <th>Total Tickets</th>
+                        <th>Max Capacity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngIf="eventStats">
+                        <td>{{eventStats.eventId}}</td>
+                        <td>{{eventStats.eventName}}</td>
+                        <td>{{eventStats.soldTickets}}</td>
+                        <td>{{eventStats.availableTickets}}</td>
+                        <td>{{eventStats.totalTickets}}</td>
+                        <td>{{eventStats.maxCapacity}}</td>
+                    </tr>
+                    <tr *ngFor="let stats of allEventStats" [class.highlight]="stats.availableTickets > 0">
+                        <td>{{stats.eventId}}</td>
+                        <td>{{stats.eventName}}</td>
+                        <td>{{stats.soldTickets}}</td>
+                        <td>{{stats.availableTickets}}</td>
+                        <td>{{stats.totalTickets}}</td>
+                        <td>{{stats.maxCapacity}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Ticket Creation Section -->
-    <div class="card ticket-form">
+    <!-- Ticket Creation Section - Only visible to vendors -->
+    <div class="card ticket-form" *ngIf="isVendor">
         <h3 class="card-header">Create New Ticket</h3>
         <div class="card-body">
             <form (ngSubmit)="createTicket()" #ticketForm="ngForm">
@@ -117,7 +118,6 @@
                 </div>
             </div>
 
-            <!-- <div class="details-table" *ngIf="ticketDetails || allTickets.length > 0"> -->
             <div class="details-table">
                 <table class="table table-striped">
                     <thead>
@@ -128,7 +128,7 @@
                             <th>Ticket ID</th>
                             <th>VIP Status</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th *ngIf="isCustomer">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -136,12 +136,12 @@
                             <td>{{ticketDetails.eventDateTime | date:'yyyy-MM-dd HH:mm'}}</td>
                             <td>{{ticketDetails.price | currency}}</td>
                             <td>{{ticketDetails.eventName}}</td>
-                            <td>{{ticketDetails.id}}</td>
+                            <td>{{ticketDetails.ticketId}}</td>
                             <td>{{ticketDetails.isVIP ? 'Yes' : 'No'}}</td>
                             <td>{{ticketDetails.isAvailable ? 'Available' : 'Sold'}}</td>
-                            <td>
+                            <td *ngIf="isCustomer">
                                 <button class="btn btn-sm btn-success" *ngIf="ticketDetails.isAvailable"
-                                    (click)="purchaseTicket(ticketDetails.id!)">
+                                    (click)="purchaseTicket(ticketDetails.ticketId!)">
                                     Purchase
                                 </button>
                             </td>
@@ -150,12 +150,12 @@
                             <td>{{ticket.eventDateTime | date:'yyyy-MM-dd HH:mm'}}</td>
                             <td>{{ticket.price | currency}}</td>
                             <td>{{ticket.eventName}}</td>
-                            <td>{{ticket.id}}</td>
+                            <td>{{ticket.ticketId}}</td>
                             <td>{{ticket.isVIP ? 'Yes' : 'No'}}</td>
                             <td>{{ticket.isAvailable ? 'Available' : 'Sold'}}</td>
-                            <td>
+                            <td *ngIf="isCustomer">
                                 <button class="btn btn-sm btn-success" *ngIf="ticket.isAvailable"
-                                    (click)="purchaseTicket(ticket.id!)">
+                                    (click)="purchaseTicket(ticket.ticketId!)">
                                     Purchase
                                 </button>
                             </td>
@@ -163,5 +163,6 @@
                     </tbody>
                 </table>
             </div>
+        </div>
     </div>
 </div>

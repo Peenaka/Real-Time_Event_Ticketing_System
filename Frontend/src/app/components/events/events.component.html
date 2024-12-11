@@ -11,30 +11,32 @@
     </div>
 
     <table class="events-table">
-        <thead>
-            <tr>
-                <th>Event ID</th>
-                <th>Event Name</th>
-                <th>Event Code</th>
-                <th>Status</th>
-                <th>Is Configured</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let event of events">
-                <td>{{event.id}}</td>
-                <td>{{event.name}}</td>
-                <td>{{event.code}}</td>
-                <td>{{event.status}}</td>
-                <td>{{event.isConfigured ? 'Yes' : 'No'}}</td>
-                <td>
-                    <button (click)="updateEvent(event)" class="btn btn-update">Update</button>
-                    <button (click)="deleteEvent(event.id)" class="btn btn-delete">Delete</button>
-                </td>
-            </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th>Event ID</th>
+          <th>Event Name</th>
+          <th>Event Code</th>
+          <th>Status</th>
+          <th>Is Configured</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of events">
+          <td>{{ event.id }}</td>
+          <td>{{ event.eventName }}</td>
+          <td>{{ event.eventCode }}</td>
+          <td>{{ event.status }}</td>
+          <td>{{ event.configured ? 'Yes' : 'No' }}</td>
+          <td>
+            <button (click)="updateEvent(event)" class="btn btn-update">Update</button>
+            <button (click)="deleteEvent(event.id)" class="btn btn-delete">Delete</button>
+          </td>
+        </tr>
+      </tbody>
     </table>
 
-    <app-create-event-dialog *ngIf="showDialog" (click)="hideCreateDialog()"></app-create-event-dialog>
+<app-create-event-dialog *ngIf="showDialog" (onSubmitEvent)="createEvent($event)"
+  (onCloseDialog)="hideCreateDialog()"></app-create-event-dialog>
+
 </div>

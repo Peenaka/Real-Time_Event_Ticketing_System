@@ -1,6 +1,6 @@
 export interface TicketConfig {
   id?: number;
-  eventId: number;
+  eventId: number; 
   eventName?: string;
   totalTickets: number;
   ticketReleaseRate: number;

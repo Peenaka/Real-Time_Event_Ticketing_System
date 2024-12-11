@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CreateEventDto } from '../../../models/event.model';
@@ -11,17 +11,19 @@ import { CreateEventDto } from '../../../models/event.model';
   imports: [CommonModule, FormsModule]
 })
 export class CreateEventDialogComponent {
+   @Output() onSubmitEvent = new EventEmitter<CreateEventDto>();
+  @Output() onCloseDialog = new EventEmitter<void>();
   event: CreateEventDto = {
     eventName: '',
     eventCode: '',
-    status: 'UPCOMING'
+    status: 'CREATED'
   };
 
   onSubmit(): void {
-    // This will be handled by the parent component
+    this.onSubmitEvent.emit(this.event); // Emit event data to parent
   }
 
   onClose(): void {
-    // This will be handled by the parent component
+    this.onCloseDialog.emit(); // Emit close dialog action to parent
   }
 }

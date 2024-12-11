@@ -1,3 +1,6 @@
+front end
+config html
+
 <div class="container">
     <h2>Configuration</h2>
 
@@ -65,7 +68,8 @@
             </thead>
             <tbody>
                 <tr *ngFor="let config of configurations">
-                    <td>{{config.eventId}}</td>
+                    <td>{{ config.eventId }}</td>
+
                     <td>{{config.eventName}}</td>
                     <td>{{config.totalTickets}}</td>
                     <td>{{config.ticketReleaseRate}}/min</td>
