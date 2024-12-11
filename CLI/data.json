@@ -1,0 +1,16 @@
+{
+  "customers": [
+    {"id": "C001", "name": "John Smith"},
+    {"id": "C002", "name": "Emma Wilson"},
+    {"id": "C003", "name": "Michael Brown"},
+    {"id": "C004", "name": "Sarah Davis"},
+    {"id": "C005", "name": "James Johnson"}
+  ],
+  "vendors": [
+    {"id": "V001", "name": "Ticket Master"},
+    {"id": "V002", "name": "Event Brite"},
+    {"id": "V003", "name": "Live Nation"},
+    {"id": "V004", "name": "Stub Hub"},
+    {"id": "V005", "name": "AXS Tickets"}
+  ]
+}
