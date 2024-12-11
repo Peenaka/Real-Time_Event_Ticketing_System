@@ -8,6 +8,8 @@ import org.example.realtime_event_ticketing_system.models.TicketConfig;
 import org.example.realtime_event_ticketing_system.repositories.EventRepository;
 import org.example.realtime_event_ticketing_system.services.EventService;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/*** Provides implementation for the EventService interface, handling event-related operations such as event creation, retrieval, updating, and deletion, as well as event configuration and ticket management.*/
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+    private static final Logger logger = LoggerFactory.getLogger(EventServiceImpl.class);
 
     private final EventRepository eventRepository;
     private final TicketPoolService ticketPoolService;
@@ -29,6 +34,7 @@ public class EventServiceImpl implements EventService {
                 eventDto.getEventCode() : generateEventCode();
 
         if (eventRepository.existsByEventCode(eventCode)) {
+            logger.error("Event code already exists", eventCode);
             throw new TicketingException("Event code already exists");
         }
 
@@ -49,6 +55,7 @@ public class EventServiceImpl implements EventService {
         if (eventDto.getEventCode() != null &&
                 !event.getEventCode().equals(eventDto.getEventCode()) &&
                 eventRepository.existsByEventCode(eventDto.getEventCode())) {
+            logger.error("Event code already exists", eventDto.getEventCode());
             throw new TicketingException("Event code already exists");
         }
 
@@ -75,7 +82,7 @@ public class EventServiceImpl implements EventService {
         try {
             event = eventRepository.getReferenceById(eventId);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error retrieving event with ID {}", eventId, e);
         }
         if (event == null) {
             return null;  // Return null or throw a custom exception if event is not found
@@ -83,7 +90,7 @@ public class EventServiceImpl implements EventService {
 
         boolean isConfigured = false;
         if (event.getTicketConfig() != null) {
-            isConfigured = event.getTicketConfig().isConfigured();
+            isConfigured = event.getTicketConfig().isConfigured(); // Check if the event is configured
         }
 
         return new EventDto(
@@ -97,12 +104,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDto> getAllEvents() {
-        List<EventDto> eventDtos = new ArrayList<>();
+        List<EventDto> eventDtos = new ArrayList<>(); // Initialize the eventDto list
         List<Event> eventDto = new ArrayList<>();
         try {
              eventDto = eventRepository.findAll();
         } catch (Exception e ){
-            e.printStackTrace();
+            logger.error("Error retrieving all events", e);
         }
         for(Event event : eventDto){
             EventDto tempDto = new EventDto();

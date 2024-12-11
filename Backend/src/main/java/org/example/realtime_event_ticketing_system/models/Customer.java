@@ -13,11 +13,11 @@
   @Data
   @EqualsAndHashCode(callSuper = true)
   @NoArgsConstructor
-  @PrimaryKeyJoinColumn(name = "user_id")
+  @PrimaryKeyJoinColumn(name = "user_id") // Specify the primary key column
   public class Customer extends User {
     private boolean isVIP;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL) // Specify the relationship
     private List<Purchase> purchases = new ArrayList<>();
 
     @Override

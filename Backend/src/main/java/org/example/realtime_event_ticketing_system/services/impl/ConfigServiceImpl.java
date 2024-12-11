@@ -12,12 +12,18 @@ import org.example.realtime_event_ticketing_system.repositories.TicketConfigRepo
 import org.example.realtime_event_ticketing_system.repositories.TicketRepository;
 import org.example.realtime_event_ticketing_system.services.ConfigService;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+/*** Provides implementation for the ConfigService interface, handling configuration-related operations such as event configuration, ticket configuration, and system settings management.*/
 
 @Service
 @RequiredArgsConstructor
 public class ConfigServiceImpl implements ConfigService {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);
+
     private final TicketConfigRepository configRepository;
     private final EventRepository eventRepository;
     private final TicketPoolService ticketPoolService;
@@ -27,14 +33,19 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public TicketConfig configureEvent(Long eventId, TicketConfigDto configDto) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+                .orElseThrow(() -> {
+                    logger.error("Event not found with ID {}", eventId);
+                    return new ResourceNotFoundException("Event not found");
+                });
 
         if (configRepository.existsByEventId(eventId)) {
+            logger.error("Event is already configured with ID {}", eventId);
             throw new TicketingException("Event is already configured");
         }
 
-        validateConfiguration(configDto);
+        validateConfiguration(configDto); // Validate the configuration
 
+          // Save the configuration
         TicketConfig config = TicketConfig.builder()
                 .event(event)
                 .totalTickets(configDto.getTotalTickets())
@@ -47,9 +58,8 @@ public class ConfigServiceImpl implements ConfigService {
                 .build();
 
         config = configRepository.save(config);
-
+        logger.info("Event configured successfully with ID {}", eventId);
 //        ticketPoolService.configureEvent(eventId, configDto);
-
         return config;
     }
 
@@ -79,9 +89,12 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public TicketConfigDto getEventConfig(Long eventId) {
         TicketConfig ticketConfig = configRepository.findByEventId(eventId)
-                .orElseThrow(() -> new ResourceNotFoundException("Event configuration not found"));
+                .orElseThrow(() -> {
+                    logger.error("Event configuration not found with ID {}", eventId);
+                    return new ResourceNotFoundException("Event configuration not found");
+                });
 
-
+        // Convert TicketConfig to TicketConfigDto
         return new TicketConfigDto(
                 ticketConfig.getTotalTickets(),
                 ticketConfig.getTicketReleaseRate(),
@@ -93,10 +106,12 @@ public class ConfigServiceImpl implements ConfigService {
 
     private void validateConfiguration(TicketConfigDto configDto) {
         if (configDto.getMaxTicketCapacity() > configDto.getTotalTickets()) {
+            logger.error("Max capacity cannot be greater than total tickets");
             throw new TicketingException("Max capacity cannot be greater than total tickets");
         }
 
         if (configDto.getTicketReleaseRate() > configDto.getMaxTicketCapacity()) {
+            logger.error("Ticket release rate cannot be greater than max capacity");
             throw new TicketingException("Ticket release rate cannot be greater than max capacity");
         }
     }

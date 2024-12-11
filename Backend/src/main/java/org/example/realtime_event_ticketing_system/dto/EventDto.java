@@ -15,14 +15,12 @@ public class EventDto {
 
     private long id;
     @Schema(description = "Name of the event", example = "Summer Music Festival 2024")
-    //@NotBlank(message = "Event name is required")
     private String eventName;
 
     @Schema(description = "Event code", example = "EVT-2024-001")
     private String eventCode;
 
     @Schema(description = "Event status")
-    //@NotNull(message = "Event status is required")
     private String status;
 
     private boolean isConfigured;

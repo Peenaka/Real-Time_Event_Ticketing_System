@@ -3,6 +3,8 @@ package org.example.realtime_event_ticketing_system.utils;
 import org.example.realtime_event_ticketing_system.exceptions.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+/*** Provides utility methods for authentication-related operations, including validation of configuration vendor credentials.*/
+
 @Component
 public class AuthenticationUtils {
     private static final String CONFIG_VENDOR_EMAIL = "VendorUser@gmail.com";

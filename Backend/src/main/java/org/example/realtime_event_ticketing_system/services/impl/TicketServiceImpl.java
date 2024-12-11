@@ -11,18 +11,21 @@ import org.example.realtime_event_ticketing_system.repositories.*;
 import org.example.realtime_event_ticketing_system.services.TicketPoolService;
 import org.example.realtime_event_ticketing_system.services.TicketService;
 import org.example.realtime_event_ticketing_system.utils.LockManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*** Provides implementation for the TicketService interface, handling ticket-related operations such as ticket creation, retrieval, updating, and deletion, as well as ticket sales, inventory management, and event ticket association.*/
 
 @Service
 @RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
+    private static final Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
+
     private final TicketRepository ticketRepository;
     private final CustomerRepository customerRepository;
     private final VendorRepository vendorRepository;
@@ -38,6 +41,8 @@ public class TicketServiceImpl implements TicketService {
         ReentrantLock lock = lockManager.getLock(eventId);
 
         lock.lock(); // Lock for this event
+        logger.info("Lock for event {} locked", eventId);
+
         try {
             Vendor vendor = vendorRepository.findById(vendorId)
                     .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
@@ -48,11 +53,13 @@ public class TicketServiceImpl implements TicketService {
             TicketConfigDto eventStats = ticketPoolService.getEventStats(eventId);
 
             if (!event.getTicketConfig().isConfigured()) {
+                logger.error("Event not configured properly");
                 throw new TicketingException("Event not configured properly");
             }
 
             int currentTotal = eventStats.getSoldTickets() + eventStats.getAvailableTickets();
             if (currentTotal + ticketDto.getTicketCount() > eventStats.getTotalTickets()) {
+                logger.error("Cannot add tickets. Would exceed total ticket limit.");
                 throw new TicketingException("Cannot add tickets. Would exceed total ticket limit.");
             }
 
@@ -69,13 +76,16 @@ public class TicketServiceImpl implements TicketService {
                 ticket.setAvailable(true);
 
                 tickets.add(ticketRepository.save(ticket));
+                logger.info("Ticket created: {}", ticket);
 
                 try {
                     boolean added = ticketPoolService.addTickets(eventId, ticket);
                     if (!added) {
+                        logger.error("Failed to add ticket to pool");
                         throw new TicketingException("Failed to add ticket to pool");
                     }
                 } catch (InterruptedException e) {
+                    logger.error("Failed to add ticket to pool", e);
                     throw new TicketingException("Failed to add ticket to pool");
                 }
             }
@@ -83,6 +93,7 @@ public class TicketServiceImpl implements TicketService {
             return tickets.get(0); // Return first ticket as reference
         } finally {
             lock.unlock(); // Always unlock in the finally block
+           logger.info("Lock for event {} unlocked", eventId);
         }
     }
 
@@ -104,6 +115,7 @@ public class TicketServiceImpl implements TicketService {
 
         Ticket ticket = ticketPoolService.purchaseTicket(eventId, customer.isVIP());
         if (ticket == null) {
+            logger.error("No tickets available");
             throw new TicketingException("No tickets available");
         }
 
@@ -111,10 +123,12 @@ public class TicketServiceImpl implements TicketService {
         ticket.setPurchased(true);
         ticket = ticketRepository.save(ticket);
 
+
         Purchase purchase = new Purchase();
         purchase.setCustomer(customer);
         purchase.setTicket(ticket);
         purchaseRepository.save(purchase);
+        logger.info("Ticket purchased: {}", ticket);
 
         return ticket;
     }
@@ -144,6 +158,7 @@ public class TicketServiceImpl implements TicketService {
         }
 
         if (!ticket.isPurchased()) {
+            logger.error("Cannot delete unpurchased ticket");
             throw new TicketingException("Cannot delete unpurchased ticket");
         }
 
@@ -158,10 +173,12 @@ public class TicketServiceImpl implements TicketService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
         if (!ticket.getVendor().getId().equals(vendorId)) {
+            logger.error("Vendor is not authorized to delete this ticket");
             throw new TicketingException("Vendor is not authorized to delete this ticket");
         }
 
         if (ticket.isPurchased()) {
+            logger.error("Cannot delete purchased ticket");
             throw new TicketingException("Cannot delete purchased ticket");
         }
 

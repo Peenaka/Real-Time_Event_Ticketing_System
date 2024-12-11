@@ -16,7 +16,7 @@
     public class Vendor extends User {
         private String companyName;
 
-        @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL)
+        @OneToMany(mappedBy = "vendor", cascade = CascadeType.ALL) // Specify the relationship
         private List<Ticket> tickets = new ArrayList<>();
 
         @Override
