@@ -22,6 +22,7 @@ export class TicketsComponent implements OnInit {
   ticketDetails: Ticket | null = null;
   allTickets: Ticket[]|null = null;
   error: string = '';
+  success: string = '';
 
   newTicket: TicketDto = {
     eventName: '',
@@ -58,28 +59,56 @@ export class TicketsComponent implements OnInit {
     return this.authState.isCustomer();
   }
 
+  clearError(): void {
+    this.error = '';
+  }
+
+  clearSuccess(): void {
+    this.success = '';
+  }
+
+  private showError(message: string): void {
+    this.clearSuccess();
+    this.error = message;
+    // Auto-hide after 5 seconds
+    setTimeout(() => this.clearError(), 5000);
+  }
+
+  private showSuccess(message: string): void {
+    this.clearError();
+    this.success = message;
+    // Auto-hide after 3 seconds
+    setTimeout(() => this.clearSuccess(), 3000);
+  }
+
   loadAllStats(): void {
+    this.clearError();
+    this.clearSuccess();
     this.ticketService.getAllTicketStats().subscribe({
       next: (stats) => {
         this.allEventStats = stats;
+        this.showSuccess('Event statistics loaded successfully');
       },
       error: (error) => {
         console.error('Error fetching all event stats:', error);
-        this.error = 'Failed to load event statistics';
+        this.showError('Failed to load event statistics');
       }
     });
   }
 
 
   loadAllTickets(): void {
+    this.clearError();
+    this.clearSuccess();
     this.ticketService.getAllTickets().subscribe({
       next: (tickets) => {
         this.allTickets = tickets;
         this.ticketDetails = null;
+        this.showSuccess('All tickets loaded successfully');
       },
       error: (error) => {
         console.error('Error fetching all tickets:', error);
-        this.error = 'Failed to load tickets';
+        this.showError('Failed to load tickets');
       }
     });
   }
@@ -94,15 +123,20 @@ export class TicketsComponent implements OnInit {
 
   getEventStats(): void {
     if (this.searchEventId) {
+      this.clearError();
+      this.clearSuccess();
       this.ticketService.getTicketStats(this.searchEventId).subscribe({
         next: (stats) => {
           this.eventStats = stats;
+          this.showSuccess(`Event statistics loaded for Event ID: ${this.searchEventId}`);
         },
         error: (error) => {
           console.error('Error fetching event stats:', error);
-          this.error = 'Failed to load event statistics';
+          this.showError('Failed to load event statistics');
         }
       });
+    } else {
+      this.showError('Please enter a valid Event ID');
     }
   }
 

@@ -1,8 +1,18 @@
 <div class="container">
     <h2 class="page-title">Ticket Management System</h2>
 
-    <div *ngIf="error" class="error-message">
-        {{ error }}
+    <!-- Success Notification -->
+    <div *ngIf="success" class="notification success-notification">
+        <span class="notification-icon">✓</span>
+        <span class="notification-message">{{ success }}</span>
+        <button class="notification-close" (click)="clearSuccess()">&times;</button>
+    </div>
+
+    <!-- Error Notification -->
+    <div *ngIf="error" class="notification error-notification">
+        <span class="notification-icon">⚠</span>
+        <span class="notification-message">{{ error }}</span>
+        <button class="notification-close" (click)="clearError()">&times;</button>
     </div>
 
     <!-- Event Stats Section -->
