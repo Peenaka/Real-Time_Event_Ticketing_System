@@ -418,14 +418,14 @@ in the Software without restriction...
 ## 👥 Contact
 
 ### 👨‍💻 Project Maintainer
-- **GitHub:** [@Peenaka-official](https://github.com/Peenaka-official)
+- **GitHub:** [@Peenaka](https://github.com/Peenaka)
 - **Email:** Contact via GitHub issues
 
 ### 🔗 Links
-- **🌟 Repository:** [Real-Time Event Ticketing System](https://github.com/Peenaka-official/Real-Time_Event_Ticketing_System)
+- **🌟 Repository:** [Real-Time Event Ticketing System](https://github.com/Peenaka/Real-Time_Event_Ticketing_System.git)
 - **🚀 Live Demo:** [Demo Link](https://tinyurl.com/eventTicketingSystem24)
 - **📚 Documentation:** [API Docs](http://localhost:8080/swagger-ui.html)
-- **🐛 Issues:** [Report Issues](https://github.com/Peenaka-official/Real-Time_Event_Ticketing_System/issues)
+- **🐛 Issues:** [Report Issues](https://github.com/Peenaka/Real-Time_Event_Ticketing_System/issues)
 
 ---
 
@@ -433,6 +433,6 @@ in the Software without restriction...
 
 **⭐ Star this repository if you found it helpful!**
 
-Made with ❤️ by [Peenaka-official](https://github.com/Peenaka-official)
+Made with ❤️ by [Peenaka](https://github.com/Peenaka)
 
 </div>
