@@ -11,7 +11,7 @@
 
 **A comprehensive, real-time event ticketing system with modern web technologies**
 
-[🚀 Demo](https://tinyurl.com/eventTicketingSystem24) • [📖 Documentation](http://localhost:8080/ticket-system/swagger-ui.html) • [🐛 Report Bug](https://github.com/Peenaka-official/Real-Time_Event_Ticketing_System/issues) • [✨ Request Feature](https://github.com/Peenaka-official/Real-Time_Event_Ticketing_System/issues)
+[🚀 Demo](https://tinyurl.com/eventTicketingSystem24) • [📖 Documentation](http://localhost:8080/ticket-system/swagger-ui.html) • [🐛 Report Bug](https://github.com/Peenaka/Real-Time_Event_Ticketing_System/issues) • [✨ Request Feature](https://github.com/Peenaka/Real-Time_Event_Ticketing_System/issues)
 
 </div>
 
