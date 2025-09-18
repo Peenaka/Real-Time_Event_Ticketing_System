@@ -423,8 +423,6 @@ in the Software without restriction...
 
 ### 🔗 Links
 - **🌟 Repository:** [Real-Time Event Ticketing System](https://github.com/Peenaka/Real-Time_Event_Ticketing_System.git)
-- **🚀 Live Demo:** [Demo Link](https://tinyurl.com/eventTicketingSystem24)
-- **📚 Documentation:** [API Docs](http://localhost:8080/swagger-ui.html)
 - **🐛 Issues:** [Report Issues](https://github.com/Peenaka/Real-Time_Event_Ticketing_System/issues)
 
 ---
